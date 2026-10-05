@@ -1,0 +1,24 @@
+project: apa-layout
+status: active
+priority: P2
+progress: 100
+version: 0.1.0
+updated: 2026-10-05
+next: adopt in other apaquarto manuscripts (per-repo request); file upstream apaquarto issues (draft only)
+
+## Release: v0.1.0
+
+Published 2026-10-05 at https://github.com/Data-Wise/apa-layout (public, MIT).
+Install: `quarto add Data-Wise/apa-layout`; filter reference `Data-Wise/apa-layout`
+(Quarto names the folder after the repo owner, not the in-repo `dtofighi/`).
+
+- Five filters fix apaquarto 7.0.0 layout bugs (docx tables/lists, jou figure
+  floats and notes, stranded table captions, Typst \big/\! math).
+- `tests/run.sh` (7 checks) and `tests/prove-fail.sh` (negative controls).
+- Workflow: main protected; feature/* -> main via PR; squash merge.
+- Consumer: pmed vendors a byte-identical copy at `_extensions/dtofighi/apa-layout`.
+
+## Not in scope
+
+Manuscript-specific fixes (math macro blocks, caption-to-note splits, equation
+breaks); an apaquarto fork (decision in README, "Why an add-on, not a fork").

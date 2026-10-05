@@ -1,0 +1,6 @@
+site_name: apa-layout
+site_description: Layout fixes for apaquarto 7.0.0 manuscripts
+repo_url: https://github.com/Data-Wise/apa-layout
+nav:
+  - Home: index.md
+  - Quick start: QUICK-START.md
