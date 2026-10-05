@@ -1,4 +1,4 @@
-# apaquarto-fixes
+# apa-layout
 
 A Quarto filter extension with layout fixes for manuscripts built on
 [apaquarto](https://github.com/wjschne/apaquarto) **7.0.0**. Each fix works
@@ -15,6 +15,15 @@ around an upstream behavior; drop the matching filter once apaquarto fixes it.
 Every filter checks the output format (and `documentmode` for `jou`) itself,
 so one line enables all of them.
 
+## Why an add-on, not a fork
+
+Decided 2026-10-05. Every fix here works on top of stock apaquarto, none edits
+its source, and upstream moves fast (5.0.18 to 7.0.0 in weeks, including a new
+LaTeX engine), so a fork would mean merging every release by hand. As an
+add-on, each filter is deleted when upstream fixes the bug it works around.
+Revisit only if a fix needs apaquarto's internals changed (its LaTeX
+template, title page, or docx reference document).
+
 ## Use
 
 Copy the extension into the manuscript (or `quarto add` once this repo is on
@@ -22,7 +31,7 @@ GitHub — from a local path, `quarto add` drops the `dtofighi/` folder):
 
 ```bash
 mkdir -p _extensions/dtofighi
-cp -R ~/projects/dev-tools/apaquarto-fixes/_extensions/dtofighi/apa-fixes _extensions/dtofighi/
+cp -R ~/projects/dev-tools/apa-layout/_extensions/dtofighi/apa-layout _extensions/dtofighi/
 ```
 
 Then add a top-level key to the manuscript's front matter (not under a
@@ -30,7 +39,7 @@ format):
 
 ```yaml
 filters:
-  - dtofighi/apa-fixes
+  - dtofighi/apa-layout
 ```
 
 ## Verification

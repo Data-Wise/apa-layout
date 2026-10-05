@@ -21,18 +21,18 @@ local needspace = [[
 \makeatletter
 \AtBeginDocument{%
   \@ifundefined{apafloattitle}{}{%
-    \let\apafixes@apafloattitle\apafloattitle
+    \let\apalayout@apafloattitle\apafloattitle
     \renewcommand{\apafloattitle}[1]{%
       \@ifundefined{@captype}{\par\Needspace{14\baselineskip}}{}%
-      \apafixes@apafloattitle{#1}}}}
+      \apalayout@apafloattitle{#1}}}}
 \makeatother
 ]]
 
 local jou_floats = [[
 \makeatletter
 \AtBeginDocument{%
-  \let\apafixes@figure\figure
-  \renewcommand{\figure}[1][]{\apafixes@figure[tbp]}}
+  \let\apalayout@figure\figure
+  \renewcommand{\figure}[1][]{\apalayout@figure[tbp]}}
 \makeatother
 ]]
 
