@@ -67,7 +67,7 @@ PDF in a temporary project with the apaquarto 7.0.0 vendored in
 where LaTeX ends up placing a float or a page break. `jou_overfull` guards no
 filter; `prove-fail.sh` shows it failing on a planted overlong line. Every
 check fails closed when its input is missing. Requires Quarto >= 1.9 (which
-bundles Typst), R with knitr and rmarkdown, and LuaLaTeX.
+bundles Typst), R with knitr, rmarkdown, ragg and svglite, and LuaLaTeX.
 
 The checks are ported from `pmed`'s layout gate (`layout-checks.sh`), where the
 fixes were first developed. A manuscript that adopts this extension can copy

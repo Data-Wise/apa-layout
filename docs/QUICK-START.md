@@ -1,0 +1,53 @@
+# apa-layout
+
+> **TL;DR:** Quarto filter add-on that fixes layout bugs in apaquarto 7.0.0
+> manuscripts (docx, `jou` PDF, Typst).
+
+## 30-Second Setup
+
+```bash
+quarto add Data-Wise/apa-layout
+```
+
+Then add to the manuscript's front matter (top level, not under a format):
+
+```yaml
+filters:
+  - Data-Wise/apa-layout
+```
+
+## What This Does
+
+- docx: data tables keep their APA rules; list items are double-spaced.
+- `jou` PDF: figures float `[tbp]` and keep their notes; table captions are not
+  stranded at a page foot.
+- Typst: `\bigl(` and `\!\left(` no longer leave gaps or collisions.
+
+## Common Tasks
+
+| I want to... | Run this |
+|---|---|
+| Check every fix | `tests/run.sh` |
+| Prove each check can fail | `tests/prove-fail.sh` |
+| Lint the docs | `markdownlint-cli2 "*.md" "docs/**/*.md"` |
+| Preview the docs site | `mkdocs serve` |
+
+## Where Things Are
+
+| Location | Contents |
+|---|---|
+| `_extensions/dtofighi/apa-layout/` | the extension (five Lua filters) |
+| `tests/` | fixture, `run.sh`, `prove-fail.sh`, vendored apaquarto |
+| `CHANGELOG.md` | release notes |
+
+## Current Status
+
+```text
+version: 0.1.0
+status:  released (https://github.com/Data-Wise/apa-layout/releases/tag/v0.1.0)
+```
+
+## Need Help?
+
+- **Filters and checks:** [README](../README.md)
+- **Issues:** <https://github.com/Data-Wise/apa-layout/issues>
