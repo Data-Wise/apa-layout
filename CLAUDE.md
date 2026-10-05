@@ -17,7 +17,7 @@ fixes the bug it works around.
 ## Commands
 
 ```bash
-tests/run.sh          # about 8 s; needs quarto >= 1.9, R (knitr, rmarkdown), lualatex
+tests/run.sh          # about 8 s; needs quarto >= 1.9, R (knitr, rmarkdown, ragg), lualatex
 tests/prove-fail.sh   # about 1 min
 markdownlint-cli2 "*.md" "docs/**/*.md"
 ```
