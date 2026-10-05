@@ -44,13 +44,34 @@ filters:
 
 ## Verification
 
-Developed and verified on `pmed` (`~/projects/research/pmed`), whose
-`render-both.sh` ends in a layout gate (`layout-checks.sh`) that fails if any
-of these fixes stops holding: docx tables carry the `Table` style, no `jou`
-figure note sits outside its float, a fresh LuaLaTeX compile of the `jou` build
-reports no overfull line, and the Typst output has no unconverted TeX, `\big`
-scale boxes or negative kerns. Each check was shown to fail on a known-bad
-build. Copy that gate into any manuscript that adopts this extension.
+```bash
+tests/run.sh          # render the fixture, check every fix (exit 1 on failure)
+tests/prove-fail.sh   # disable each filter in turn; each check must fail
+```
+
+`tests/run.sh` renders `tests/fixture/fixture.qmd` to docx, Typst and `jou`
+PDF in a temporary project with the apaquarto 7.0.0 vendored in
+`tests/vendor/` and this repo's filters, then checks:
+
+| Check | Filter | Holds when |
+|---|---|---|
+| `docx_tables` | `docx-tables.lua` | every data table carries the ruled `Table` style |
+| `docx_lists` | `docx-lists.lua` | no list item uses the single-spaced `Compact` style |
+| `jou_notes` | `jou-float-notes.lua` | no figure note follows `\end{figure}` in the `jou` tex |
+| `jou_floats` | `latex-header.lua` | the `jou` preamble redefines figures to float `[tbp]` |
+| `needspace` | `latex-header.lua` | the preamble puts `\Needspace` before in-flow table titles |
+| `typst_math` | `typst-math.lua` | the Typst output has no unconverted TeX, `\big` scale boxes or negative kerns |
+| `jou_overfull` | (sanity) | a fresh LuaLaTeX compile of the `jou` tex reports no overfull line |
+
+`jou_floats` and `needspace` confirm that the preamble code is present, not
+where LaTeX ends up placing a float or a page break. `jou_overfull` guards no
+filter; `prove-fail.sh` shows it failing on a planted overlong line. Every
+check fails closed when its input is missing. Requires Quarto >= 1.9 (which
+bundles Typst), R with knitr and rmarkdown, and LuaLaTeX.
+
+The checks are ported from `pmed`'s layout gate (`layout-checks.sh`), where the
+fixes were first developed. A manuscript that adopts this extension can copy
+that gate to check its own builds.
 
 Not in this extension (manuscript-specific): math macros for docx/html/typst,
 caption-to-note splits, and equation line breaks.

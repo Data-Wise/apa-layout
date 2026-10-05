@@ -1,0 +1,4 @@
+# Wide reference tables are the README convention; keep prose at 80 columns.
+MD013:
+  tables: false
+MD060: false

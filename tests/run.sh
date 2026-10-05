@@ -1,0 +1,219 @@
+#!/bin/sh
+# Render tests/fixture/fixture.qmd with the vendored apaquarto 7.0.0 and this
+# repo's apa-layout, then check that every fix holds. Exits 1 on any failure.
+#
+#   tests/run.sh
+#
+# Environment (used by tests/prove-fail.sh):
+#   APA_LAYOUT_DISABLE  space-separated filter files to replace with a no-op
+#                       in the temporary copy (the repo is never touched)
+#   APA_LAYOUT_FIXTURE  a .qmd to render instead of tests/fixture/fixture.qmd
+#   KEEP=1              keep the temporary project and print its path
+#
+# Check            Guards
+#   docx_tables    docx-tables.lua      data tables keep the ruled Table style
+#   docx_lists     docx-lists.lua       no list item in Word's Compact style
+#   jou_notes      jou-float-notes.lua  a figure's note stays inside its jou float
+#   jou_floats     latex-header.lua     jou figures float [tbp], not [H]
+#   needspace      latex-header.lua     \Needspace before an in-flow table title
+#   typst_math     typst-math.lua       no \big scale boxes or \! negative kerns
+#   jou_overfull   (sanity)             the jou build compiles, no overfull line
+#
+# Ported from pmed's layout-checks.sh. Each check fails closed when its input
+# is missing or would make it vacuous, and tests/prove-fail.sh shows each one
+# failing when the filter it guards is disabled.
+
+set -eu
+
+HERE=$(cd "$(dirname "$0")" && pwd)
+ROOT=$(dirname "$HERE")
+FIXTURE=${APA_LAYOUT_FIXTURE:-$HERE/fixture/fixture.qmd}
+EXT=_extensions/dtofighi/apa-layout
+
+WORK=$(mktemp -d)
+cleanup() { if [ "${KEEP:-0}" = 1 ]; then echo "kept: $WORK"; else rm -rf "$WORK"; fi; }
+trap cleanup EXIT
+
+mkdir -p "$WORK/_extensions/dtofighi"
+cp "$FIXTURE" "$WORK/fixture.qmd"
+cp -R "$HERE/vendor/wjschne" "$WORK/_extensions/"
+cp -R "$ROOT/$EXT" "$WORK/$EXT"
+for _f in ${APA_LAYOUT_DISABLE:-}; do
+  [ -f "$WORK/$EXT/$_f" ] || { echo "no such filter: $_f" >&2; exit 2; }
+  printf 'return {}\n' >"$WORK/$EXT/$_f"
+  echo "disabled: $_f"
+done
+
+QMD="$WORK/fixture.qmd"
+DOCX="$WORK/out/fixture.docx"
+TYP="$WORK/out/fixture.typ"
+TYPLOG="$WORK/out/typst.log"
+TEXDIR="$WORK/out/jou"
+mkdir -p "$WORK/out" "$TEXDIR"
+
+render() {
+  _log="$WORK/out/render-$1.log"; shift
+  if ! (cd "$WORK" && quarto render fixture.qmd "$@") >"$_log" 2>&1; then
+    cat "$_log"
+    echo "FAIL render: quarto render $*" >&2
+    exit 1
+  fi
+}
+
+echo "==> Rendering docx, typst, pdf (jou)…"
+render docx --to apaquarto-docx
+mv "$WORK/fixture.docx" "$DOCX"
+render typst --to apaquarto-typst -M keep-typ:true
+cp "$WORK/out/render-typst.log" "$TYPLOG"
+mv "$WORK/fixture.typ" "$TYP"
+render jou --to apaquarto-pdf -M documentmode:jou -M keep-tex:true
+cp "$WORK/fixture.tex" "$TEXDIR/"
+cp -R "$WORK/fixture_files" "$TEXDIR/"
+
+# --- docx --------------------------------------------------------------------
+
+# Every table the fixture declares must carry the Table style; apaquarto
+# 7.0.0's docxlayout.lua gives them the borderless FigureLayout.
+check_docx_tables() {
+  _want=$(grep -c -E '\{#tbl-|^#\| label: tbl-' "$QMD" || true)
+  _xml=$(unzip -p "$DOCX" word/document.xml 2>/dev/null || true)
+  if [ "${_want:-0}" -eq 0 ] || [ -z "$_xml" ]; then
+    echo "  FAIL docx_tables: no tables declared in the fixture or unreadable docx"
+    return 1
+  fi
+  _got=$(printf '%s' "$_xml" | grep -o '<w:tblStyle w:val="Table"' | wc -l | tr -d ' ')
+  if [ "$_got" -lt "$_want" ]; then
+    echo "  FAIL docx_tables: $_got of $_want data tables carry the ruled Table style"
+    echo "       (docx-tables.lua no longer undoes docxlayout.lua's FigureLayout?)"
+    return 1
+  fi
+  echo "  OK: docx data tables ruled ($_got of $_want with the Table style)"
+}
+
+# No list paragraph (one with <w:numPr>) may use the single-spaced Compact
+# style. Table cells are Compact by design, so only list items are counted.
+check_docx_lists() {
+  _paras=$(unzip -p "$DOCX" word/document.xml 2>/dev/null \
+    | awk '{ gsub(/<\/w:p>/, "&\n"); print }' | grep '<w:numPr>' || true)
+  _items=$(printf '%s' "$_paras" | grep -c '<w:numPr>' || true)
+  if [ "${_items:-0}" -eq 0 ]; then
+    echo "  FAIL docx_lists: no list items in the docx"
+    return 1
+  fi
+  _compact=$(printf '%s' "$_paras" | grep -c 'w:val="Compact"' || true)
+  if [ "$_compact" -gt 0 ]; then
+    echo "  FAIL docx_lists: $_compact of $_items list items use the single-spaced Compact style"
+    echo "       (docx-lists.lua no longer loosens tight lists?)"
+    return 1
+  fi
+  echo "  OK: docx list items double-spaced ($_items items, none Compact)"
+}
+
+# --- pdf (jou) ---------------------------------------------------------------
+
+# No \begin{apafloatnote} may directly follow \end{figure}.
+check_jou_notes() {
+  _tex="$TEXDIR/fixture.tex"
+  if ! grep -q '^\\apajoufloats' "$_tex" 2>/dev/null; then
+    printf '%s\n' "  FAIL jou_notes: not a jou build (no \apajoufloats call)"
+    return 1
+  fi
+  _want=$(grep -c '^#| apa-note:' "$QMD" || true)
+  _notes=$(grep -c '\\begin{apafloatnote}' "$_tex" || true)
+  if [ "${_want:-0}" -eq 0 ] || [ "${_notes:-0}" -lt "$_want" ]; then
+    echo "  FAIL jou_notes: $_notes notes in the jou tex, the fixture declares $_want chunk notes"
+    return 1
+  fi
+  _bad=$(awk '
+    /^[[:space:]]*$/ { next }
+    /^\\begin\{apafloatnote\}/ && prev ~ /^\\end\{figure\}/ { n++ }
+    { prev = $0 }
+    END { print n + 0 }' "$_tex")
+  if [ "$_bad" -gt 0 ]; then
+    printf '%s\n' "  FAIL jou_notes: $_bad figure note(s) set after \end{figure}, outside the float"
+    echo "       (jou-float-notes.lua no longer applies?)"
+    return 1
+  fi
+  echo "  OK: jou figure notes inside their floats ($_notes notes)"
+}
+
+# The jou preamble must redefine figure to float [tbp]. This checks that
+# latex-header.lua injected the redefinition, not where LaTeX placed a float.
+check_jou_floats() {
+  if ! grep -qF '\apalayout@figure[tbp]' "$TEXDIR/fixture.tex" 2>/dev/null; then
+    echo "  FAIL jou_floats: jou preamble does not float figures [tbp]"
+    echo "       (latex-header.lua no longer injects its jou block?)"
+    return 1
+  fi
+  echo "  OK: jou figures float [tbp]"
+}
+
+# The preamble must wrap \apafloattitle with \Needspace. Like jou_floats, this
+# checks the injection, not a page break.
+check_needspace() {
+  if ! grep -qF '\Needspace{14\baselineskip}' "$TEXDIR/fixture.tex" 2>/dev/null; then
+    printf '%s\n' "  FAIL needspace: no \Needspace before in-flow table titles"
+    echo "       (latex-header.lua no longer injects its needspace block?)"
+    return 1
+  fi
+  printf '%s\n' "  OK: in-flow table titles ask for room (\Needspace)"
+}
+
+# Compile a fresh copy of the jou tex with lualatex in draft mode and read THAT
+# log; quarto's stdout carries no LaTeX warnings.
+check_jou_overfull() {
+  _dir=$(mktemp -d)
+  cp -R "$TEXDIR"/. "$_dir"/
+  ( cd "$_dir" && for _i in 1 2; do
+      lualatex -draftmode -interaction=nonstopmode fixture.tex >/dev/null 2>&1 || true
+    done )
+  if ! grep -q 'LuaHBTeX' "$_dir/fixture.log" 2>/dev/null; then
+    echo "  FAIL jou_overfull: no fresh LuaLaTeX log"
+    rm -rf "$_dir"
+    return 1
+  fi
+  _over=$(grep -E 'Overfull \\hbox \([1-9][0-9]*\.[0-9]+pt too wide\)' "$_dir/fixture.log" || true)
+  rm -rf "$_dir"
+  if [ -n "$_over" ]; then
+    echo "  FAIL jou_overfull: lines wider than a jou column (>= 1pt):"
+    printf '%s\n' "$_over" | sed 's/^/       /'
+    return 1
+  fi
+  echo "  OK: jou has no line wider than its column (fresh LuaLaTeX log)"
+}
+
+# --- typst -------------------------------------------------------------------
+
+check_typst_math() {
+  _src=$(grep -c -E '\\[Bb]ig[lr]?[^A-Za-z]|\\!' "$QMD" || true)
+  _math=$(grep -c '\$' "$TYP" 2>/dev/null || true)
+  if [ "${_src:-0}" -eq 0 ] || [ "${_math:-0}" -eq 0 ]; then
+    printf '%s\n' "  FAIL typst_math: no \big or \! in the fixture, or no math in the Typst output"
+    return 1
+  fi
+  _conv=$(grep -c 'Could not convert TeX math' "$TYPLOG" || true)
+  _kern=$(grep -c '#h(-' "$TYP" || true)
+  _scale=$(grep -c 'scale(x: 1[0-9][0-9]%' "$TYP" || true)
+  if [ "$_conv" -gt 0 ] || [ "$_kern" -gt 0 ] || [ "$_scale" -gt 0 ]; then
+    printf '%s\n' "  FAIL typst_math: $_conv unconverted TeX, $_kern negative kerns, $_scale \big scale boxes"
+    echo "       (typst-math.lua no longer applies?)"
+    return 1
+  fi
+  printf '%s\n' "  OK: typst math converted (no raw TeX, no \big boxes, no negative kerns)"
+}
+
+echo "==> Checking layout…"
+FAIL=0
+check_docx_tables || FAIL=1
+check_docx_lists || FAIL=1
+check_jou_notes || FAIL=1
+check_jou_floats || FAIL=1
+check_needspace || FAIL=1
+check_jou_overfull || FAIL=1
+check_typst_math || FAIL=1
+
+if [ "$FAIL" -ne 0 ]; then
+  echo "LAYOUT CHECKS FAILED"
+  exit 1
+fi
+echo "All layout checks passed."

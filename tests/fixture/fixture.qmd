@@ -1,0 +1,73 @@
+---
+title: "apa-layout Test Fixture"
+shorttitle: "APA-LAYOUT FIXTURE"
+author:
+  - name: Test Author
+    corresponding: true
+    email: test@example.com
+    affiliations:
+      - name: Example University
+abstract: >-
+  A minimal apaquarto manuscript that triggers every apa-layout fix, rendered
+  by tests/run.sh.
+keywords: [fixture]
+bibliography: []
+filters:
+  - dtofighi/apa-layout
+execute:
+  echo: false
+  warning: false
+---
+
+<!--
+Each block below triggers one apa-layout filter; tests/run.sh checks the
+rendered output. Keep at least one of each:
+  data table      docx-tables.lua    (docx_tables)
+  tight lists     docx-lists.lua     (docx_lists)
+  chunk figure    jou-float-notes.lua (jou_notes), latex-header.lua (jou_floats)
+  in-flow table   latex-header.lua   (needspace)
+  \bigl, \!\left  typst-math.lua     (typst_math)
+-->
+
+## Lists
+
+A tight bulleted list:
+
+- first item
+- second item
+- third item
+
+A tight numbered list:
+
+1. one
+2. two
+3. three
+
+## Math
+
+Scaled delimiters $\bigl(a + b\bigr)^2$ and a negative kern
+$\Phi\!\left(\frac{x}{2}\right)$ in running text, and on display:
+
+$$
+P = \Phi\!\left(\frac{\mu}{\sigma}\right) + \bigl(1 - \Phi(z)\bigr)
+$$
+
+## Figure
+
+```{r}
+#| label: fig-sample
+#| fig-cap: "A Sample Figure"
+#| apa-note: "A figure note that apaquarto writes after the float in jou mode."
+plot(1:10, (1:10)^2, xlab = "x", ylab = "y")
+```
+
+## Table
+
+| Variable | *M* | *SD* |
+|----------|----:|-----:|
+| Age      | 34.2 | 8.1 |
+| Score    | 71.5 | 12.3 |
+
+: Descriptive Statistics {#tbl-desc apa-note="A table note."}
+
+See @fig-sample and @tbl-desc.
