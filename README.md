@@ -26,20 +26,28 @@ template, title page, or docx reference document).
 
 ## Use
 
-Copy the extension into the manuscript (or `quarto add` once this repo is on
-GitHub — from a local path, `quarto add` drops the `dtofighi/` folder):
+Install from GitHub (needs Quarto 1.9 or later):
 
 ```bash
-mkdir -p _extensions/dtofighi
-cp -R ~/projects/dev-tools/apa-layout/_extensions/dtofighi/apa-layout _extensions/dtofighi/
+quarto add Data-Wise/apa-layout
 ```
 
-Then add a top-level key to the manuscript's front matter (not under a
-format):
+Quarto names the installed folder after the repo owner, so the extension lands
+at `_extensions/Data-Wise/apa-layout`. Add a top-level key to the manuscript's
+front matter (not under a format):
 
 ```yaml
 filters:
-  - dtofighi/apa-layout
+  - Data-Wise/apa-layout
+```
+
+Offline, copy the folder instead. This keeps the `dtofighi/` namespace, so the
+filter reference is `dtofighi/apa-layout`; the two names are interchangeable,
+since a filter reference is only a folder path:
+
+```bash
+mkdir -p _extensions/dtofighi
+cp -R path/to/apa-layout/_extensions/dtofighi/apa-layout _extensions/dtofighi/
 ```
 
 ## Verification
