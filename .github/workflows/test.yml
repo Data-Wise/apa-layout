@@ -25,7 +25,7 @@ jobs:
       - name: Install TinyTeX (LuaLaTeX)
         run: |
           quarto install tinytex --no-prompt
-          echo "$(ls -d $HOME/.TinyTeX/bin/*/ | head -1)" >> "$GITHUB_PATH"
+          find "$HOME"/.TinyTeX/bin -mindepth 1 -maxdepth 1 -type d | head -1 >> "$GITHUB_PATH"
 
       - name: Layout checks
         run: tests/run.sh
