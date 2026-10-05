@@ -15,7 +15,8 @@ Install: `quarto add Data-Wise/apa-layout`; filter reference `Data-Wise/apa-layo
 - Five filters fix apaquarto 7.0.0 layout bugs (docx tables/lists, jou figure
   floats and notes, stranded table captions, Typst \big/\! math).
 - `tests/run.sh` (7 checks) and `tests/prove-fail.sh` (negative controls).
-- Workflow: main protected; feature/* -> main via PR; squash merge.
+- Workflow (craft style): feature/* -> dev (squash) -> main (release PR, merge
+  commit). main protected; dev has a deletion-only ruleset.
 - Consumer: pmed vendors a byte-identical copy at `_extensions/dtofighi/apa-layout`.
 
 ## Not in scope
