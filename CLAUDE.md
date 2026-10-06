@@ -36,6 +36,9 @@ markdownlint-cli2 "*.md" "docs/**/*.md"
   `filters:` line serves all formats. Keep that.
 - A new filter needs a check in `tests/run.sh` and a case in
   `tests/prove-fail.sh` that fails when the filter is disabled.
+- CI (`.github/workflows/test.yml`) installs TinyTeX with quarto, which looks up
+  the latest release through the GitHub API: keep `GITHUB_TOKEN` on that step
+  or runs fail intermittently with 403.
 - Bump `version` in `_extension.yml` and add a CHANGELOG entry per release.
 - TeX in `\AtBeginDocument` (latex-header.lua): write `#1`, not `##1`.
 - Overfull boxes: quarto's stdout shows no LaTeX warnings; compile the kept
