@@ -1,6 +1,6 @@
 # apa-layout Reference Card
 
-> One-page reference for apa-layout 0.1.1 (apaquarto 7.0.0, Quarto >= 1.9)
+> One-page reference for apa-layout 0.1.2 (apaquarto 7.0.0, Quarto >= 1.9)
 
 ## Install and Enable
 
@@ -17,7 +17,7 @@
 |---|---|---|
 | `docx-tables.lua` | docx | data tables keep the ruled `Table` style |
 | `docx-lists.lua` | docx | list items double-spaced, not `Compact` |
-| `latex-header.lua` | pdf | `jou` figures float `[tbp]`; `\Needspace` before table titles |
+| `latex-header.lua` | pdf | `jou` figures and tables float `[tbp]`; `\Needspace` before table titles |
 | `jou-float-notes.lua` | pdf `jou` | figure note stays inside its float |
 | `typst-math.lua` | typst | no `\big` gap, no `\!` collision |
 
@@ -29,6 +29,8 @@
 | `docx_lists` | `docx-lists.lua` | no list item is `Compact` |
 | `jou_notes` | `jou-float-notes.lua` | no note follows `\end{figure}` |
 | `jou_floats` | `latex-header.lua` | preamble floats figures `[tbp]` |
+| `jou_table_floats` | `latex-header.lua` | preamble floats tables `[tbp]` |
+| `jou_pockets` | `latex-header.lua` | no blank gap over 25% in a jou column |
 | `needspace` | `latex-header.lua` | preamble adds `\Needspace` |
 | `stranded_titles` | `latex-header.lua` | no table title alone at a page foot |
 | `typst_math` | `typst-math.lua` | no raw TeX, `\big` boxes or kerns |
@@ -63,6 +65,7 @@ quarto render ms.qmd --to apaquarto-typst
 | Issue | Solution |
 |---|---|
 | Lands in `Data-Wise/` not `dtofighi/` | use `Data-Wise/apa-layout` |
+| jou table overprints the next column | add `apa-twocolumn="true"` to its caption attributes |
 | No fix applies | `filters:` must be top level, not under a format |
 | `macro parameter character #` | write `#1`, not `##1`, in injected TeX |
 | No overfull warnings in stdout | `lualatex -draftmode` on the kept `.tex` |
