@@ -16,6 +16,14 @@ filters:
   - Data-Wise/apa-layout
 ```
 
+Contributing? Clone and run the checks:
+
+```bash
+git clone https://github.com/Data-Wise/apa-layout.git
+cd apa-layout
+tests/run.sh
+```
+
 ## What This Does
 
 - docx: data tables keep their APA rules; list items are double-spaced.
@@ -43,8 +51,8 @@ filters:
 ## Current Status
 
 ```text
-version: 0.1.0
-status:  released (https://github.com/Data-Wise/apa-layout/releases/tag/v0.1.0)
+version: 0.1.1
+status:  released (https://github.com/Data-Wise/apa-layout/releases/tag/v0.1.1)
 ```
 
 ## Need Help?

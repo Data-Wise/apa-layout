@@ -4,6 +4,27 @@ All notable changes to apa-layout are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and versions follow
 [Semantic Versioning](https://semver.org/).
 
+## [0.1.1] - 2026-10-05
+
+No change to the filters; installing 0.1.1 gives the same behavior as 0.1.0.
+Documentation, CI and repo housekeeping.
+
+### Added
+
+- Guide (`docs/guide/apa-layout.md`) and one-page reference card
+  (`docs/reference/REFCARD-APA-LAYOUT.md`), with a minimal mkdocs site
+  (built locally, not deployed).
+- Quick start, `CLAUDE.md`, `.STATUS`, and a PR template.
+- GitHub Actions workflow running `tests/run.sh` and `tests/prove-fail.sh` on
+  pull requests and on pushes to `main` and `dev`.
+
+### Changed
+
+- README "Use" leads with `quarto add Data-Wise/apa-layout`; the filter
+  reference is `Data-Wise/apa-layout` (Quarto names the installed folder after
+  the repo owner). The offline copy recipe keeps the `dtofighi/` namespace.
+- Branching is craft style: `main` <- `dev` <- `feature/*`.
+
 ## [0.1.0] - 2026-10-05
 
 First release. Layout fixes for manuscripts built on apaquarto 7.0.0; requires
@@ -28,4 +49,5 @@ Quarto >= 1.9.0.
   its filter is disabled.
 - MIT license.
 
+[0.1.1]: https://github.com/Data-Wise/apa-layout/releases/tag/v0.1.1
 [0.1.0]: https://github.com/Data-Wise/apa-layout/releases/tag/v0.1.0

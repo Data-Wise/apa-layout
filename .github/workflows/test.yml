@@ -2,7 +2,7 @@ name: Tests
 
 on:
   push:
-    branches: [main]
+    branches: [main, dev]
   pull_request:
 
 jobs:
@@ -28,7 +28,11 @@ jobs:
       - name: Install R packages
         run: Rscript -e 'install.packages(c("knitr", "rmarkdown", "ragg", "svglite"))'
 
+      # quarto looks up the latest TinyTeX release through the GitHub API; an
+      # unauthenticated call is rate-limited (403) on shared runner IPs.
       - name: Install TinyTeX (LuaLaTeX)
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           quarto install tinytex --no-prompt
           find "$HOME"/.TinyTeX/bin -mindepth 1 -maxdepth 1 -type d | head -1 >> "$GITHUB_PATH"

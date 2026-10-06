@@ -25,13 +25,20 @@ markdownlint-cli2 "*.md" "docs/**/*.md"
 
 ## Rules
 
-- Branches: `main` is protected (PR required). Work on `feature/*`, squash-merge.
+- Branches (craft style): `main` (PR only, release) <- `dev` (integration) <-
+  `feature/*`. Feature PRs target `dev` and squash-merge; releases are a
+  `dev -> main` PR with a merge commit. `dev` has a deletion-only ruleset
+  (`protect-dev-from-deletion`) because auto-delete of merged branches would
+  otherwise remove it after a release PR.
 - Keep apaquarto out of any `_extensions/` folder in the tree: `quarto add`
   would install it too. Vendored copies live under `tests/vendor/`.
 - Every filter guards on `FORMAT` (and `documentmode` for jou) so one
   `filters:` line serves all formats. Keep that.
 - A new filter needs a check in `tests/run.sh` and a case in
   `tests/prove-fail.sh` that fails when the filter is disabled.
+- CI (`.github/workflows/test.yml`) installs TinyTeX with quarto, which looks up
+  the latest release through the GitHub API: keep `GITHUB_TOKEN` on that step
+  or runs fail intermittently with 403.
 - Bump `version` in `_extension.yml` and add a CHANGELOG entry per release.
 - TeX in `\AtBeginDocument` (latex-header.lua): write `#1`, not `##1`.
 - Overfull boxes: quarto's stdout shows no LaTeX warnings; compile the kept
