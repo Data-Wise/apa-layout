@@ -51,8 +51,8 @@ tests/run.sh
 ## Current Status
 
 ```text
-version: 0.1.0
-status:  released (https://github.com/Data-Wise/apa-layout/releases/tag/v0.1.0)
+version: 0.1.1
+status:  released (https://github.com/Data-Wise/apa-layout/releases/tag/v0.1.1)
 ```
 
 ## Need Help?

@@ -2,11 +2,11 @@ project: apa-layout
 status: active
 priority: P2
 progress: 100
-version: 0.1.0
+version: 0.1.1
 updated: 2026-10-05
-next: release PR dev -> main (carries README, docs, CI); then adopt in other manuscripts (per-repo request); file upstream apaquarto issues (draft only)
+next: adopt in other manuscripts (per-repo request); file upstream apaquarto issues (draft only)
 
-## Release: v0.1.0
+## Release: v0.1.1 (v0.1.0 on 2026-10-05; 0.1.1 is docs/CI only, filters unchanged)
 
 Published 2026-10-05 at https://github.com/Data-Wise/apa-layout (public, MIT).
 Install: `quarto add Data-Wise/apa-layout`; filter reference `Data-Wise/apa-layout`
