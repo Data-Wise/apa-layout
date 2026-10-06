@@ -23,6 +23,9 @@ Documentation, CI and repo housekeeping.
 - README "Use" leads with `quarto add Data-Wise/apa-layout`; the filter
   reference is `Data-Wise/apa-layout` (Quarto names the installed folder after
   the repo owner). The offline copy recipe keeps the `dtofighi/` namespace.
+- README and the docs index open with an Install section
+  (`quarto add Data-Wise/apa-layout`); the offline copy recipe moved to
+  "Offline install".
 - Branching is craft style: `main` <- `dev` <- `feature/*`.
 
 ## [0.1.0] - 2026-10-05
