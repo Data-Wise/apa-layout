@@ -22,10 +22,8 @@ execute:
 <!--
 Each block below triggers one apa-layout filter; tests/run.sh checks the
 rendered output. Keep at least one of each:
-  data table      docx-tables.lua    (docx_tables)
   tight lists     docx-lists.lua     (docx_lists)
-  chunk figure    jou-float-notes.lua (jou_notes), latex-header.lua (jou_floats)
-  in-flow table   latex-header.lua   (needspace)
+  chunk figure    latex-header.lua   (jou_floats, jou_table_floats)
   \bigl, \!\left  typst-math.lua     (typst_math)
 -->
 

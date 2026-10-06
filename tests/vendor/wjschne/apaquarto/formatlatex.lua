@@ -165,8 +165,44 @@ local function asked_for_first_page(m)
   return nil
 end
 
+-- The document's own geometry options, as a list of strings: written as one
+-- string ("margin=2in") or as a list of them.
+local function asked_for_geometry(m)
+  local out = pandoc.List({})
+  local value = m.geometry
+  if value == nil then return out end
+  if pandoc.utils.type(value) == "List" then
+    for _, item in ipairs(value) do out:insert(utilsapa.stringify(item)) end
+  else
+    out:insert(utilsapa.stringify(value))
+  end
+  return out
+end
+
 local function meta(m)
   mode = utilsapa.mode(m)
+  -- The page each mode is set on. A document's margin field is written after
+  -- it, the same field typst and .docx read, and then its own geometry
+  -- options, for anything else geometry can do. geometry takes the last
+  -- value it is given for a key, so a writer's margins win in every mode
+  -- while what they leave unsaid --- the head and foot of a journal page,
+  -- say --- stays as the mode sets it, and geometry wins over margin where
+  -- both name a side. A dissertation's front matter sets its own margins
+  -- page by page (thesislatex.lua), and \restoregeometry hands the body back
+  -- these.
+  local asked_margin = utilsapa.margin_sides(m.margin, true) or {}
+  local asked_geometry = asked_for_geometry(m)
+  local mode_geometry = { "margin=1in" }
+  if mode == "thesis" then
+    -- A dissertation is bound at the left and wants more there.
+    local margins = utilsapa.thesis_margins
+    mode_geometry = {
+      string.format("left=%.2fin", margins.left),
+      string.format("right=%.2fin", margins.right),
+      string.format("top=%.2fin", margins.top),
+      string.format("bottom=%.2fin", margins.bottom),
+    }
+  end
   if m.shorttitle then
     shorttitle = utilsapa.stringify(m.shorttitle)
   elseif m.title then
@@ -240,9 +276,15 @@ local function meta(m)
     quarto.doc.include_text("in-header", "\\apastudenthead")
   end
 
+  -- A block quotation half an inch in on the left and not at all on the
+  -- right. Journal mode and a dissertation set their own below.
+  if mode ~= "jou" and mode ~= "thesis" then
+    quarto.doc.include_text("in-header", "\\apaquote")
+  end
+
   -- A dissertation sets a block quotation, a note and the entries of its
-  -- reference list single spaced, indents a quotation half an inch from both
-  -- margins and a note's first line half an inch, and keeps a page from
+  -- reference list single spaced, indents a quotation half an inch on the
+  -- left and a note's first line half an inch, and keeps a page from
   -- breaking after the first line of a paragraph or before its last. The reference list is patched at the start of the document
   -- rather than in the preamble: the environment quarto writes it in is one
   -- of pandoc's own, and where an include lands among those is a detail of
@@ -283,19 +325,20 @@ local function meta(m)
     -- (x: 0.75in, y: 1in) there. Written out side by side rather than as one
     -- margin, which had set the foot at three quarters too and left this
     -- format eighteen points more text on every page than typst had.
-    m.geometry = pandoc.MetaList({
-      pandoc.MetaString("left=0.75in"),
-      pandoc.MetaString("right=0.75in"),
-      pandoc.MetaString("top=0.75in"),
-      pandoc.MetaString("bottom=1in"),
-      pandoc.MetaString("includehead"),
-      pandoc.MetaString("headheight=13pt"),
-      pandoc.MetaString("headsep=4pt"),
+    mode_geometry = {
+      "left=0.75in",
+      "right=0.75in",
+      "top=0.75in",
+      "bottom=1in",
+      "includehead",
+      "headheight=13pt",
+      "headsep=4pt",
       -- The opening page carries its number at the foot. footskip is measured
       -- to the baseline, so this sets the number about eleven points under the
       -- text block, which is where the Journal of Educational Psychology puts
       -- it; latex's own leaves it half an inch down.
-      pandoc.MetaString("footskip=18pt") })
+      "footskip=18pt",
+    }
     quarto.doc.include_text("in-header", "\\singlespacing")
     -- Two columns, asked for at the start of the document. A journal that has
     -- a masthead asks for them differently: the masthead is handed to
@@ -311,6 +354,10 @@ local function meta(m)
     -- References hang by the paragraph indent rather than by a manuscript's
     -- half inch, which is what the typst format does in this mode.
     quarto.doc.include_text("in-header", "\\apajouhangindent")
+    -- Headings the size and spacing of a published APA article's.
+    quarto.doc.include_text("in-header", "\\apajouheadings")
+    -- Block quotations indented on the left only.
+    quarto.doc.include_text("in-header", "\\apajouquote")
     local authors = m["jou-running-authors"]
     if authors then
       quarto.doc.include_text("in-header",
@@ -319,6 +366,21 @@ local function meta(m)
           "\\%1") .. "}")
     end
   end
+  local geometry = pandoc.MetaList({})
+  for _, option in ipairs(mode_geometry) do
+    geometry:insert(pandoc.MetaString(option))
+  end
+  for _, side in ipairs({ "left", "right", "top", "bottom" }) do
+    if asked_margin[side] then
+      geometry:insert(pandoc.MetaString(
+        string.format("%s=%gin", side, asked_margin[side])))
+    end
+  end
+  for _, option in ipairs(asked_geometry) do
+    geometry:insert(pandoc.MetaString(option))
+  end
+  m.geometry = geometry
+
   -- Numbered lines, which apa7 draws with lineno and so does this. The size,
   -- the right alignment and the distance from the text are lineno's own,
   -- which is what apa7 leaves them at; journal mode moves the number closer
@@ -779,6 +841,10 @@ end
 local function div(el)
   if el.classes:includes("FigureNote") then
     return environment("apafloatnote", el.content)
+  end
+  -- The dash attribution under a block quotation (apaquote.lua).
+  if el.classes:includes("quote-attribution") then
+    return environment("apaquoteattribution", el.content)
   end
   -- The reference list is left exactly as it is.
   --

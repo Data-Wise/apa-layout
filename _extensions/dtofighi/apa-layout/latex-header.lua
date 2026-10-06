@@ -1,34 +1,19 @@
--- LaTeX (apaquarto-pdf) only. Adds two preamble fixes, each wrapped in
--- \AtBeginDocument so it does not matter where Quarto places this text
--- relative to apaquarto's own template (apalatex.tex):
+-- LaTeX (apaquarto-pdf), jou only. floatsintext makes apaquarto set every
+-- figure and in-flow table [H] (floatlatex.lua). In two columns an [H] float
+-- that does not fit the rest of a column jumps to the next one and leaves a
+-- blank pocket (jou columns are flush-bottom, so the space is spread inside the
+-- column); let figures and tables float [tbp] instead. man keeps [H]. A float
+-- that asks to span both columns (apa-twocolumn) is a starred environment with
+-- its own placement and is untouched. Wrapped in \AtBeginDocument so it does
+-- not matter where Quarto places this text relative to apaquarto's template.
 --
--- 1. jou only: floatsintext makes apaquarto set every figure and in-flow table
---    [H] (floatlatex.lua). In two columns an [H] float that does not fit the
---    rest of a column jumps to the next one and leaves a blank pocket; let
---    figures and tables float [tbp] instead. man keeps [H]. Pair with
---    jou-float-notes.lua, which keeps a figure's note inside the float that now
---    moves. A float that asks to span both columns (apa-twocolumn) is a
---    starred environment with its own placement and is untouched.
---
--- 2. All modes: an in-flow table's title and caption end in \nopagebreak, but
---    the \addcontentsline that follows leaves a legal page break before the
---    longtable, so a caption can be stranded at a page foot. Before a title set
---    outside any float, ask for room for the title, caption and a short table.
---    Floats are untouched: \@captype is defined only inside them.
+-- Retired in 0.2.0, fixed upstream in apaquarto v7.0.0 (2026-10-06): the
+-- \Needspace before in-flow table titles (apaquarto#170). Its stated cause was
+-- wrong: the stranded title came from longtable's \LT@start, which checks
+-- whether the head, first row and foot fit on the rest of the page and forces a
+-- page break if not, after the title and caption are already set.
 
 if not quarto.doc.is_format("latex") then return {} end
-
-local needspace = [[
-\usepackage{needspace}
-\makeatletter
-\AtBeginDocument{%
-  \@ifundefined{apafloattitle}{}{%
-    \let\apalayout@apafloattitle\apafloattitle
-    \renewcommand{\apafloattitle}[1]{%
-      \@ifundefined{@captype}{\par\Needspace{14\baselineskip}}{}%
-      \apalayout@apafloattitle{#1}}}}
-\makeatother
-]]
 
 local jou_floats = [[
 \makeatletter
@@ -43,7 +28,6 @@ local jou_floats = [[
 return {
   { Meta = function(meta)
       local mode = meta.documentmode and pandoc.utils.stringify(meta.documentmode) or "man"
-      quarto.doc.include_text("in-header", needspace)
       if mode == "jou" then
         quarto.doc.include_text("in-header", jou_floats)
       end

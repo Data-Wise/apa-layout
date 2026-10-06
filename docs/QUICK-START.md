@@ -1,7 +1,7 @@
 # apa-layout
 
-> **TL;DR:** Quarto filter add-on that fixes layout bugs in apaquarto 7.0.0
-> manuscripts (docx, `jou` PDF, Typst).
+> **TL;DR:** Quarto filter add-on that fixes layout bugs in the apaquarto v7.0.0
+> release (docx lists, `jou` PDF floats, Typst).
 
 ## 30-Second Setup
 
@@ -26,9 +26,9 @@ tests/run.sh
 
 ## What This Does
 
-- docx: data tables keep their APA rules; list items are double-spaced.
-- `jou` PDF: figures and tables float `[tbp]` and figures keep their notes;
-  table captions are not stranded at a page foot.
+- docx: list items are double-spaced.
+- `jou` PDF: figures and tables float `[tbp]`, so tall tables leave no blank
+  pockets in a column.
 - Typst: `\bigl(` and `\!\left(` no longer leave gaps or collisions.
 
 ## Common Tasks
@@ -44,15 +44,15 @@ tests/run.sh
 
 | Location | Contents |
 |---|---|
-| `_extensions/dtofighi/apa-layout/` | the extension (five Lua filters) |
+| `_extensions/dtofighi/apa-layout/` | the extension (three Lua filters) |
 | `tests/` | fixture, `run.sh`, `prove-fail.sh`, vendored apaquarto |
 | `CHANGELOG.md` | release notes |
 
 ## Current Status
 
 ```text
-version: 0.1.2
-status:  released (https://github.com/Data-Wise/apa-layout/releases/tag/v0.1.2)
+version: 0.2.0
+status:  unreleased (latest release: v0.1.2)
 ```
 
 ## Need Help?

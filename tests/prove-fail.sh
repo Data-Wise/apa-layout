@@ -9,7 +9,7 @@
 set -u
 
 HERE=$(cd "$(dirname "$0")" && pwd)
-ALL="docx_tables docx_lists jou_notes jou_floats needspace stranded_titles jou_table_floats jou_pockets jou_overfull typst_math"
+ALL="docx_lists jou_floats jou_table_floats jou_pockets jou_overfull typst_math"
 BAD=0
 
 # $1 = VAR=value for run.sh, $2 = label, $3 = checks expected to fail. The
@@ -34,10 +34,8 @@ expect() {
 }
 
 echo "==> Disabling each filter in turn…"
-expect APA_LAYOUT_DISABLE=docx-tables.lua     docx-tables.lua     docx_tables
 expect APA_LAYOUT_DISABLE=docx-lists.lua      docx-lists.lua      docx_lists
-expect APA_LAYOUT_DISABLE=jou-float-notes.lua jou-float-notes.lua jou_notes
-expect APA_LAYOUT_DISABLE=latex-header.lua    latex-header.lua    "jou_floats needspace stranded_titles jou_table_floats jou_pockets"
+expect APA_LAYOUT_DISABLE=latex-header.lua    latex-header.lua    "jou_floats jou_table_floats jou_pockets"
 expect APA_LAYOUT_DISABLE=typst-math.lua      typst-math.lua      typst_math
 
 echo "==> Planting a line wider than a jou column…"

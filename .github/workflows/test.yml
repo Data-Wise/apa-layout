@@ -20,7 +20,7 @@ jobs:
           use-public-rspm: true
 
       # ragg (apaquarto's figure device) needs the -dev libraries; poppler-utils
-      # provides pdftotext/pdfinfo for the stranded_titles check.
+      # provides pdftotext for the jou_pockets check.
       - name: Install system libraries
         run: |
           sudo apt-get update
