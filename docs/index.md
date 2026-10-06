@@ -18,7 +18,7 @@ filters:
 
 Quarto names the installed folder after the repo owner, so the extension lands
 at `_extensions/Data-Wise/apa-layout`. To pin a release, use
-`quarto add Data-Wise/apa-layout@v0.1.2`.
+`quarto add Data-Wise/apa-layout@v0.2.0`.
 
 ## Next
 

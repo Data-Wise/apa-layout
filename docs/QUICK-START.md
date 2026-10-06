@@ -52,7 +52,7 @@ tests/run.sh
 
 ```text
 version: 0.2.0
-status:  unreleased (latest release: v0.1.2)
+status:  released (https://github.com/Data-Wise/apa-layout/releases/tag/v0.2.0)
 ```
 
 ## Need Help?
