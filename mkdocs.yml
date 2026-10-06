@@ -4,3 +4,5 @@ repo_url: https://github.com/Data-Wise/apa-layout
 nav:
   - Home: index.md
   - Quick start: QUICK-START.md
+  - Guide: guide/apa-layout.md
+  - Reference card: reference/REFCARD-APA-LAYOUT.md
