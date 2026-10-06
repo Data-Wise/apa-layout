@@ -28,6 +28,7 @@
 | `jou_table_floats` | `latex-header.lua` | preamble floats tables `[tbp]` |
 | `jou_pockets` | `latex-header.lua` | no blank gap over 25% in a jou column |
 | `typst_math` | `typst-math.lua` | no raw TeX, `\big` boxes or kerns |
+| `man_floats` | (apaquarto#171) | no figure title or note clipped at a man page foot |
 | `jou_overfull` | (sanity) | no overfull line wider than 1 pt |
 
 ## Retired in 0.2.0 (fixed in apaquarto v7.0.0)

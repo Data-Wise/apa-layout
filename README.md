@@ -56,7 +56,8 @@ Open upstream: [wjschne/apaquarto#171](https://github.com/wjschne/apaquarto/issu
 With the #169 fix, a code-chunk figure's note sits inside `man`'s `[H]` float
 and cannot break across pages, so a long note can run off the page foot and be
 clipped, with exit 0. apa-layout does not work around it; shorten the figure
-or the note.
+or the note. The `man_floats` check in `tests/run.sh` detects it (a planted
+long note makes it fail); copy it to a manuscript's own gate.
 
 No issue is filed for `docx-lists.lua`, the `[tbp]` filter, or
 `typst-math.lua`; those are upstream behaviors or texmath output, not bugs
@@ -101,11 +102,13 @@ filters, then checks:
 | `jou_table_floats` | `latex-header.lua` | the `jou` preamble redefines tables to float `[tbp]` |
 | `jou_pockets` | `latex-header.lua` | no column of the two-column `jou` probe has a blank gap over 25% (16 tall tables after text of varying length) |
 | `typst_math` | `typst-math.lua` | the Typst output has no unconverted TeX, `\big` scale boxes or negative kerns |
+| `man_floats` | (apaquarto#171) | the end of every chunk `fig-cap` and `apa-note` in the fixture reaches the `man` PDF (not clipped at a page foot) |
 | `jou_overfull` | (sanity) | a fresh LuaLaTeX compile of the `jou` tex reports no overfull line |
 
 `jou_floats` and `jou_table_floats` confirm that the preamble code is present;
-`jou_pockets` is the behavior check for where a float lands. `jou_overfull`
-guards no filter; `prove-fail.sh` shows it failing on a planted overlong line. Every
+`jou_pockets` is the behavior check for where a float lands. `man_floats` guards
+upstream rather than a filter, and `jou_overfull` guards no filter;
+`prove-fail.sh` shows it failing on a planted overlong line. Every
 check fails closed when its input is missing. Requires Quarto >= 1.9 (which
 bundles Typst), R with knitr, rmarkdown, ragg and svglite, LuaLaTeX, and
 `pdftotext` (poppler) and `python3`. The three retired fixes

@@ -82,7 +82,7 @@ at a page foot; the real cause is longtable's `\LT@start` fit test, not
 `\addcontentsline`). Still open upstream:
 [#171](https://github.com/wjschne/apaquarto/issues/171), where with the #169
 fix a long figure note sits inside `man`'s unbreakable `[H]` float and can be
-clipped at the page foot, silently.
+clipped at the page foot, silently. The `man_floats` check detects it.
 
 ### `typst-math.lua` (typst)
 
@@ -94,7 +94,7 @@ both; Typst sizes matched delimiters itself.
 ## Verifying the Fixes
 
 ```bash
-tests/run.sh          # render the fixture, run 6 checks
+tests/run.sh          # render the fixture, run 7 checks
 tests/prove-fail.sh   # disable each filter in turn; each check must fail
 ```
 

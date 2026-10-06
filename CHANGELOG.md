@@ -29,7 +29,16 @@ or stay on 0.1.2.
   change that.
 - Checks `docx_tables`, `jou_notes`, `needspace` and `stranded_titles`, and the
   `stranded.qmd` probe, with the filters they guarded. `tests/run.sh` now runs
-  6 checks.
+  6 checks (7 with the next entry).
+
+### Added
+
+- `man_floats` check, ported from pmed's `check_man_floats`: the end of every
+  chunk `fig-cap` and `apa-note` in the fixture must appear in the `man` PDF.
+  Guards upstream rather than a filter (apaquarto#171, a long figure note
+  clipped at a page foot). `prove-fail.sh` plants a tall figure with an
+  11-sentence note and expects only this check to fail. `tests/run.sh` now
+  runs 7 checks and also renders the fixture to `man`.
 
 ### Changed
 
@@ -42,8 +51,7 @@ or stay on 0.1.2.
   with the #169 fix, a code-chunk figure's note sits inside `man`'s `[H]` float
   and cannot break across pages, so a long note runs off the page foot, clipped,
   with exit 0 (reproduced with `fig-height: 7` and an 11-sentence note). Not
-  worked around here. pmed gates it with `check_man_floats`: the last math-free
-  3+-word span of every `fig-cap` and `apa-note` must appear in the man PDF.
+  worked around here; the `man_floats` check detects it.
 
 ## [0.1.2] - 2026-10-05
 
