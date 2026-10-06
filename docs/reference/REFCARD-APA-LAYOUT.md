@@ -30,8 +30,17 @@
 | `jou_notes` | `jou-float-notes.lua` | no note follows `\end{figure}` |
 | `jou_floats` | `latex-header.lua` | preamble floats figures `[tbp]` |
 | `needspace` | `latex-header.lua` | preamble adds `\Needspace` |
+| `stranded_titles` | `latex-header.lua` | no table title alone at a page foot |
 | `typst_math` | `typst-math.lua` | no raw TeX, `\big` boxes or kerns |
 | `jou_overfull` | (sanity) | no overfull line wider than 1 pt |
+
+## Upstream Issues
+
+| Filter | Issue |
+|---|---|
+| `docx-tables.lua` | [#168](https://github.com/wjschne/apaquarto/issues/168) |
+| `jou-float-notes.lua` | [#169](https://github.com/wjschne/apaquarto/issues/169) |
+| `latex-header.lua` (`\Needspace`) | [#170](https://github.com/wjschne/apaquarto/issues/170) |
 
 ## Commands
 

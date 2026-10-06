@@ -4,6 +4,22 @@ All notable changes to apa-layout are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and versions follow
 [Semantic Versioning](https://semver.org/).
 
+## [Unreleased]
+
+### Added
+
+- `stranded_titles` check: `tests/fixture/stranded.qmd` puts a table after
+  every offset from 0 to 29 filler lines in a `man` PDF; the check fails if a
+  table title is left alone at a page foot. It fails when `latex-header.lua`
+  is disabled (2 of 30 titles stranded locally) and passes with it, so it
+  tests the `\Needspace` fix itself, not just its injection. Needs
+  `pdftotext` (poppler).
+- Upstream issues filed for three of the fixes
+  ([#168](https://github.com/wjschne/apaquarto/issues/168),
+  [#169](https://github.com/wjschne/apaquarto/issues/169),
+  [#170](https://github.com/wjschne/apaquarto/issues/170)), linked from the
+  README, guide and reference card.
+
 ## [0.1.1] - 2026-10-05
 
 No change to the filters; installing 0.1.1 gives the same behavior as 0.1.0.
