@@ -4,6 +4,47 @@ All notable changes to apa-layout are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and versions follow
 [Semantic Versioning](https://semver.org/).
 
+## [0.2.0] - Unreleased
+
+Needs the apaquarto **v7.0.0 release** (2026-10-06 11:21 UTC or later). An
+install from upstream's default branch before then also reports `7.0.0` but
+lacks the fixes below; reinstall with `quarto update extension wjschne/apaquarto`,
+or stay on 0.1.2.
+
+### Removed
+
+- `docx-tables.lua`: fixed upstream
+  ([wjschne/apaquarto#168](https://github.com/wjschne/apaquarto/issues/168)).
+  With it disabled against the release, data tables keep the `Table` style.
+- `jou-float-notes.lua`: fixed upstream
+  ([#169](https://github.com/wjschne/apaquarto/issues/169)). The release writes
+  a chunk figure's note inside the float, and the filter was a no-op on the
+  release's output (identical `jou` tex with and without it).
+- The `\Needspace` half of `latex-header.lua`: fixed upstream
+  ([#170](https://github.com/wjschne/apaquarto/issues/170)). A 30-table `man`
+  probe has no stranded title without it. Its comment gave the wrong cause: the
+  break comes from longtable's `\LT@start`, which checks whether the head, first
+  row and foot fit on the rest of the page and forces a page break if not, after
+  the title and caption are set. Removing every `\addcontentsline` does not
+  change that.
+- Checks `docx_tables`, `jou_notes`, `needspace` and `stranded_titles`, and the
+  `stranded.qmd` probe, with the filters they guarded. `tests/run.sh` now runs
+  6 checks.
+
+### Changed
+
+- `tests/vendor/wjschne/` is the apaquarto v7.0.0 release, not the earlier
+  default-branch copy that also said 7.0.0.
+
+### Known upstream
+
+- [wjschne/apaquarto#171](https://github.com/wjschne/apaquarto/issues/171):
+  with the #169 fix, a code-chunk figure's note sits inside `man`'s `[H]` float
+  and cannot break across pages, so a long note runs off the page foot, clipped,
+  with exit 0 (reproduced with `fig-height: 7` and an 11-sentence note). Not
+  worked around here. pmed gates it with `check_man_floats`: the last math-free
+  3+-word span of every `fig-cap` and `apa-note` must appear in the man PDF.
+
 ## [0.1.2] - 2026-10-05
 
 ### Changed

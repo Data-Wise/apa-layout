@@ -430,6 +430,21 @@ return {
       if div.classes:includes("NoIndent") then
         return {pandoc.RawBlock('typst', "#set par(first-line-indent: 0mm)"), div, pandoc.RawBlock('typst', "#set par(first-line-indent: " .. bodyindent .. ")")}
       end
+
+      -- The dash attribution under a block quotation (apaquote.lua): against
+      -- the quotation's right edge, with no first-line indent. Both are set
+      -- inside a content block of their own, so nothing has to be put back
+      -- after, and the div's paragraphs go in it bare rather than in the
+      -- block pandoc writes a div as: a block (and an align is one) is set
+      -- off by the quotation's space around blocks, which put more air above
+      -- the attribution than between the lines of the quotation.
+      if div.classes:includes("quote-attribution") then
+        local out = pandoc.List({ pandoc.RawBlock("typst",
+          "#[#set align(right)\n#set par(first-line-indent: 0pt)") })
+        out:extend(div.content)
+        out:insert(pandoc.RawBlock("typst", "]"))
+        return out
+      end
     end
   } ,
   {
@@ -464,7 +479,11 @@ return {
               -- that asked for none is unaffected.
               "#[#set par.line(numbering: none)\n" ..
               "#par()[#text(size:0.5em)[#h(0.0em)]]]\n" ..
-              "#v(apafirstparshift)"))
+              -- Taken back by the paragraph spacing the spacer brought with
+              -- it, whatever the mode sets that to: a fixed 18pt took the
+              -- first paragraph after a heading too close in any mode whose
+              -- spacing was not 18pt.
+              "#context v(-par.spacing)"))
           end
         end       
         -- Count appendices, by the heading crossrefprefix.lua marks as

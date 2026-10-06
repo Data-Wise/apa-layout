@@ -533,6 +533,35 @@
   {\normalfont\bfseries\itshape}{}{0pt}{}
 \titlespacing{\subparagraph}{\parindent}{\baselineskip}{0.5em}
 
+% Journal mode sets levels one to three the way the Journal of Educational
+% Psychology does (measured from its pages; JEP.pdf at the repository root):
+% a point larger than the body and on a line a point deeper, so 11pt on 13pt
+% over the 10pt on 12pt body, with 26pt from the baseline above to the
+% heading's and 18pt from the heading's to the first line under it.
+% titlespacing adds to the heading's own 13pt line above and the body's 12pt
+% line below, so those are 13pt and 6pt here. typst-template.typ sets the
+% same in its jou layout.
+% Both values are expanded before \fontsize sees them: \fontsize keeps its own
+% workings in \@tempdimb, and handed \the\@tempdimb it read back the new size
+% as the line, setting the heading solid.
+\makeatletter
+\newcommand{\apajouheadingfont}{%
+  \@tempdima=\f@size pt\advance\@tempdima by 1pt
+  \@tempdimb=\f@baselineskip\advance\@tempdimb by 1pt
+  \edef\apa@headingfont{\noexpand\fontsize{\the\@tempdima}{\the\@tempdimb}}%
+  \apa@headingfont\selectfont}
+\makeatother
+\newcommand{\apajouheadings}{%
+  \titleformat{\section}[block]
+    {\normalfont\apajouheadingfont\bfseries\centering}{}{0pt}{}%
+  \titlespacing{\section}{0pt}{13pt}{6pt}%
+  \titleformat{\subsection}[block]
+    {\normalfont\apajouheadingfont\bfseries\raggedright}{}{0pt}{}%
+  \titlespacing{\subsection}{0pt}{13pt}{6pt}%
+  \titleformat{\subsubsection}[block]
+    {\normalfont\apajouheadingfont\bfseries\itshape\raggedright}{}{0pt}{}%
+  \titlespacing{\subsubsection}{0pt}{13pt}{6pt}}
+
 % --- Title page -------------------------------------------------------------
 % The title itself, bold and centred, set a third of the way down the page in
 % manuscript mode and at the top of the body otherwise.
@@ -567,6 +596,39 @@
   {\par\noindent\bfseries #1\par\nopagebreak}}
 \newcommand{\apafloatcaption}[1]{%
   {\par\noindent\itshape\interlinepenalty10000 #1\par\nopagebreak}}
+
+% \nopagebreak cannot keep such a table with its title, because longtable
+% breaks the page itself: before it starts it asks whether its head and first
+% row fit on what is left of the page, and if not it ends the page there,
+% leaving the title and caption alone at its foot. So floatlatex.lua sets the
+% title and caption (with the label and the list-of-tables line, whose anchors
+% belong with them) in a box between \apatablekeep and \apatablekeepend, and
+% the page is ended ahead of them unless there is room for them and three lines
+% more, the space a table's head and first row take.
+%
+% The room is measured rather than guessed in lines. Fourteen lines, a guess
+% that would allow for most tables whole, is half a double-spaced page, and in
+% tests/layout-table-keep.qmd it sent most tables to the next page.
+%
+% The box begins from the depth of the line above it, so that the title is set
+% the same distance under that line as it would have been without the box, and
+% the line after the box is spaced from the caption's last line the same way.
+\newsavebox{\apatablekeepbox}
+\newlength{\apatablekeepdepth}
+\newcommand{\apatablekeep}{%
+  \par\setlength{\apatablekeepdepth}{\prevdepth}%
+  \setbox\apatablekeepbox\vbox\bgroup\prevdepth\apatablekeepdepth}
+\newcommand{\apatablekeepend}{%
+  \par\global\apatablekeepdepth\prevdepth\egroup
+  % A penalty no page may break at, which hands what is waiting to the page
+  % so that \pagetotal counts it.
+  \penalty10000
+  \ifdim\dimexpr\ht\apatablekeepbox+\dp\apatablekeepbox+3\baselineskip\relax
+      >\dimexpr\pagegoal-\pagetotal\relax
+    \vfil\penalty-10000
+  \fi
+  \unvbox\apatablekeepbox
+  \prevdepth\apatablekeepdepth}
 
 % The blank line APA leaves between a figure's title and the figure itself.
 %
@@ -655,11 +717,41 @@
   \setstretch{1}\selectfont
   \addtolength{\apathesisentrysep}{-\baselineskip}}
 
-% A block quotation is indented half an inch from both margins, where a LaTeX
-% quote takes the 2.5em of \leftmargini, and is single spaced.
+% Block quotations. Every mode indents one on the left only and runs it to
+% the margin on the right, as the .docx, the .html and typst do. LaTeX's own
+% quote takes the 2.5em of \leftmargini on both sides. \parsep is the space a
+% list puts between its paragraphs, a few points more than the line spacing,
+% which set the paragraphs of a quotation, and the attribution under it,
+% further apart than the lines of the text around it.
+%
+% A manuscript, a student paper and a document indent half an inch.
+\newcommand{\apaquote}{%
+  \renewenvironment{quote}
+    {\list{}{\leftmargin=0.5in\rightmargin=0pt\parsep=0pt}\item\relax}
+    {\endlist}}
+
+% A journal indents 16pt (measured from quote.pdf, a Group Dynamics article),
+% which is how the APA journals set one. typst-template.typ's jou layout does
+% the same.
+\newcommand{\apajouquote}{%
+  \renewenvironment{quote}
+    {\list{}{\leftmargin=16pt\rightmargin=0pt\parsep=0pt}\item\relax}
+    {\endlist}}
+
+% The dash attribution a block quotation can end with (apaquote.lua): set
+% against the right edge of the quotation, with no first-line indent. The
+% indent is taken off with \parindent rather than \noindent: pandoc writes a
+% blank line after \begin, and a paragraph \noindent had already opened ended
+% there empty, which set a blank line between the quotation and its
+% attribution.
+\newenvironment{apaquoteattribution}
+  {\par\raggedleft\setlength{\parindent}{0pt}}
+  {\par}
+
+% A dissertation indents half an inch and single spaces.
 \newcommand{\apathesisquote}{%
   \renewenvironment{quote}
-    {\list{}{\leftmargin=0.5in\rightmargin=0.5in}%
+    {\list{}{\leftmargin=0.5in\rightmargin=0pt\parsep=0pt}%
      \item\relax\apathesissingle}
     {\endlist}}
 

@@ -75,38 +75,10 @@ end
 local kCaptionStyle = "ImageCaption"
 
 local xml_escape = require("utilsapa").xml_escape
-
 -- Inlines as word runs. Only the marking a caption is likely to carry is
 -- understood; anything else is written as its text, which is what pandoc's own
 -- stringify would give.
-local function runs(inlines, bold, italic)
-  local out = {}
-  for _, inline in ipairs(inlines) do
-    if inline.t == "Str" then
-      local properties = {}
-      if bold then properties[#properties + 1] = "<w:b/>" end
-      if italic then properties[#properties + 1] = "<w:i/>" end
-      local rpr = ""
-      if #properties > 0 then
-        rpr = "<w:rPr>" .. table.concat(properties) .. "</w:rPr>"
-      end
-      out[#out + 1] = "<w:r>" .. rpr .. '<w:t xml:space="preserve">'
-        .. xml_escape(inline.text) .. "</w:t></w:r>"
-    elseif inline.t == "Space" or inline.t == "SoftBreak" then
-      out[#out + 1] = '<w:r><w:t xml:space="preserve"> </w:t></w:r>'
-    elseif inline.t == "Strong" then
-      out[#out + 1] = runs(inline.content, true, italic)
-    elseif inline.t == "Emph" then
-      out[#out + 1] = runs(inline.content, bold, true)
-    elseif inline.content then
-      out[#out + 1] = runs(inline.content, bold, italic)
-    else
-      out[#out + 1] = "<w:r>" .. '<w:t xml:space="preserve">'
-        .. xml_escape(pandoc.utils.stringify(inline)) .. "</w:t></w:r>"
-    end
-  end
-  return table.concat(out)
-end
+local runs = require("utilsapa").docx_runs
 
 local function caption_paragraph(inlines)
   return pandoc.RawBlock("openxml",
@@ -258,6 +230,24 @@ local function merge_adjacent_tables(blocks)
   return out
 end
 
+-- Whether a table is the grid quarto lays panels out in, rather than a table
+-- of data. A grid holds pictures, or the tables of a table set out in panels.
+--
+-- apafloat.lua marks tables as well as figures FigureWithNote or
+-- FigureWithoutNote, so a captioned markdown table arrives here too. Given
+-- FigureLayout, it lost the reference document's Table style and every rule
+-- APA draws in a table, and word set it bare (wjschne/apaquarto#168). A walk
+-- of a table sees what is inside it and never the table itself.
+local function is_layout_table(block)
+  local found = false
+  block:walk {
+    Image = function() found = true end,
+    Figure = function() found = true end,
+    Table = function() found = true end,
+  }
+  return found
+end
+
 local function rebuild(float)
   local titles = pandoc.List({})
   local body = pandoc.List({})
@@ -276,7 +266,7 @@ local function rebuild(float)
           note.attributes["custom-style"] = kNoteStyle
           notes:insert(note)
         end
-      elseif block.t == "Table" then
+      elseif block.t == "Table" and is_layout_table(block) then
         laid_out = true
         local table_block = captions_above(style_panel_notes(block))
         table_block.attr = table_block.attr or pandoc.Attr()

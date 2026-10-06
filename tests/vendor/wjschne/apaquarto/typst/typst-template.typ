@@ -48,8 +48,14 @@
 // dictionary from 0.13 on, where all: true indents the paragraph that opens a
 // section as well as the ones that follow. Everything that sets the indent
 // goes through here so the two forms stay in one place.
-#let apaparindent(amount, all: false) = if all and sys.version >= version(0, 13, 0) {
-  (amount: amount, all: true)
+//
+// From 0.13 on, all: false is said in so many words rather than left to a
+// plain length. A plain length set inside something whose surroundings say
+// all: true changes only the amount and keeps that all: true, so a journal's
+// block quotation, whose body indents every paragraph, had its first
+// paragraph indented whenever it had a second one, an attribution included.
+#let apaparindent(amount, all: false) = if sys.version >= version(0, 13, 0) {
+  (amount: amount, all: all)
 } else {
   amount
 }
@@ -291,7 +297,6 @@
 //   linenumber-font: [Helvetica, Arial]
 #let linenumberfont = ("DejaVu Sans Mono",)
 
-#let apafirstparshift = -18pt
 
 // Shared APA layout for every document mode. man/jou/doc/stu (defined below the
 // function) are thin presets that override only the parameters that differ —
@@ -322,8 +327,12 @@
   // typst's own default monospace font
   monofont: ("DejaVu Sans Mono",),
   fontsize: 12pt,
-  leading: 18pt,
-  spacing: 18pt,
+  // Double spacing: 24pt from one baseline to the next at 12pt, which is the
+  // .pdf's. Typst counts leading from the bottom of one line to the top of the
+  // next, so 16pt here is the 24pt on the page (measured in
+  // tests/layout-manuscript.qmd). It was 18pt, which set 26pt.
+  leading: 16pt,
+  spacing: 16pt,
   firstlineindent: 0.5in,
   // Indent the paragraph that opens a section too, not just the ones after
   // another paragraph. Journal mode wants every body paragraph indented.
@@ -331,8 +340,19 @@
   // Size of the level 1 to 3 section headings, and the space above and below
   // them. none means follow the body: fontsize and leading.
   headingsize: none,
+  // How much larger than the body a heading is when headingsize is none, so
+  // that a mode can keep its headings a step above whatever size the body is
+  // set at.
+  headinggrow: 0pt,
   headingspace: none,
+  // The space above them alone, where a mode wants more there than below.
+  // none means headingspace.
+  headingabove: none,
   quoteinset: 0.5in,
+  // How far a block quotation stands in from the right margin: not at all,
+  // in every mode, as in the .pdf, .docx and .html. none means quoteinset,
+  // the same as from the left.
+  quoteinsetright: 0pt,
   // Block quotations. none follows the body: its size, its line spacing, its
   // space above and below a block, and its rule about whether the paragraph
   // that opens a block is indented. quoteparspace is the exception: none
@@ -485,9 +505,17 @@
       )
   )
 
+  // The space between two paragraphs is the space between two lines, so
+  // that a double-spaced manuscript is double spaced throughout and a journal
+  // page marks a new paragraph by its indent alone. Since Typst 0.12 that
+  // space is par's spacing, which a set block rule does not reach; left
+  // unset it was Typst's own 1.2em, 2pt short of double spacing in a
+  // manuscript, 7pt of extra air between the paragraphs of a journal, and
+  // deaf to a document's own leading.
   set par(
     justify: justify,
     leading: leading,
+    spacing: leading,
     first-line-indent: apaparindent(firstlineindent, all: indentall)
   )
 
@@ -498,7 +526,8 @@
   // gaps stretched to the column edge. APA sets no table that way.
   show table: set par(justify: false)
 
-  // Also "leading" space between paragraphs
+  // The space above and below a block: a quotation, a list, a figure, code.
+  // Not the space between paragraphs, which is par's (above).
   set block(spacing: spacing, above: spacing, below: spacing)
 
   // A note, where a mode asks for measurements of its own. Gathered and spread
@@ -531,7 +560,13 @@
   let qindentall = if quoteindentall == none { indentall } else { quoteindentall }
   let fspace = if floatspace == none { spacing } else { floatspace }
 
-  show quote: set pad(x: quoteinset)
+  let qright = if quoteinsetright == none { quoteinset } else { quoteinsetright }
+  // A block quotation is set in a pad of apaquarto's own rather than in the
+  // one typst's quote brings. A set rule on pad reached the left of that one,
+  // but typst kept an inset of its own on the right, so a quotation could not
+  // run to the margin the way a journal's does.
+  show quote.where(block: true): it => block(width: 100%,
+    pad(left: quoteinset, right: qright, it.body))
   show quote: set text(size: qsize)
   // The gap between two paragraphs is par's spacing, not block's: a paragraph
   // is not a block, so a set block rule never reaches it. Setting spacing to
@@ -606,10 +641,13 @@
   // frontmatter.lua sets. The size goes in a set rule on the heading rather
   // than inside the block below, because a set rule inside the block would be
   // the innermost one and would override those.
-  let hsize = if headingsize == none { fontsize } else { headingsize }
+  let hsize = if headingsize == none { fontsize + headinggrow } else { headingsize }
   let headspace = it => if it.outlined {
     if headingspace == none { leading } else { headingspace }
   } else { leading }
+  let headabove = it => if it.outlined and headingabove != none {
+    headingabove
+  } else { headspace(it) }
 
   show heading.where(level: 1, outlined: true): set text(size: hsize)
   show heading.where(level: 2, outlined: true): set text(size: hsize)
@@ -622,7 +660,7 @@
   // breaking a word in it, is not something a journal does.
   show heading.where(
     level: 1
-  ): it => block(width: 100%, below: headspace(it), above: headspace(it))[
+  ): it => block(width: 100%, below: headspace(it), above: headabove(it))[
     #set align(center)
     #set par(justify: false)
     #set text(hyphenate: false)
@@ -631,7 +669,7 @@
   
   show heading.where(
     level: 2
-  ): it => block(width: 100%, below: headspace(it), above: headspace(it))[
+  ): it => block(width: 100%, below: headspace(it), above: headabove(it))[
     #set align(left)
     #set par(justify: false)
     #set text(hyphenate: false)
@@ -640,7 +678,7 @@
   
   show heading.where(
     level: 3
-  ): it => block(width: 100%, below: headspace(it), above: headspace(it))[
+  ): it => block(width: 100%, below: headspace(it), above: headabove(it))[
     #set align(left)
     #set par(justify: false)
     #set text(hyphenate: false, style: "italic")
@@ -688,24 +726,34 @@
   // Every body paragraph is indented in a journal article, including the one
   // that opens a section.
   indentall: true,
-  // Section headings stand above the 10pt body, with a fixed 9pt of air on
-  // either side rather than the body's tighter leading.
-  headingsize: 11pt,
-  headingspace: 9pt,
-  quoteinset: 0.25in,
+  // Levels one to three the way the Journal of Educational Psychology sets
+  // them (measured from its pages; JEP.pdf at the repository root): a point
+  // larger than the body, so 11pt over the 10pt body, with 26pt from the
+  // baseline above to the heading's and 18pt from the heading's to the first
+  // line under it. apalatex.tex's \apajouheadings sets the same for the .pdf.
+  // Typst measures a block's space from the edge of the text rather than its
+  // baseline: above from the top of the heading's capitals (26pt less 7pt)
+  // and below to the top of the next line's (18pt less 7.5pt), as measured on
+  // the page.
+  headinggrow: 1pt,
+  headingabove: 19pt,
+  headingspace: 10.5pt,
+  // A journal indents a block quotation on the left only; it runs to the
+  // column edge on the right. apalatex.tex's \apajouquote does the same.
+  quoteinset: 16pt,
+  quoteinsetright: 0pt,
   // apa7 sets a block quotation smaller than the text around it. The
   // paragraph that opens the quotation runs flush left and the ones after it
   // are indented, the way a quoted passage is set, and they are separated by
   // nothing more than the line spacing so the passage reads as one quotation.
-  // The quotation as a whole is given the same 9 points of air the section
-  // headings get.
+  // The quotation as a whole is given 9 points of air above and below.
   quotesize: 9pt,
   quoteparspace: jouleading,
   quotespace: 9pt,
   quoteindentall: false,
   // A figure or table title stands off the text above it by the same 9 points
-  // the section headings and the block quotations get, rather than by the
-  // body's tighter space between paragraphs.
+  // the block quotations get, rather than by the body's tighter space between
+  // paragraphs.
   floatspace: 9pt,
   cols: 2,
   justify: true,
