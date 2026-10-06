@@ -17,6 +17,7 @@
 #   jou_table_floats latex-header.lua   jou tables float [tbp], not [H]
 #   jou_pockets    latex-header.lua     no blank pocket in a jou column (jou probe PDF)
 #   typst_math     typst-math.lua       no \big scale boxes or \! negative kerns
+#   man_floats     (apaquarto #171)     no figure title or note clipped at a man page foot
 #   jou_overfull   (sanity)             the jou build compiles, no overfull line
 #
 # Ported from pmed's layout-checks.sh. Each check fails closed when its input
@@ -51,6 +52,7 @@ TYP="$WORK/out/fixture.typ"
 TYPLOG="$WORK/out/typst.log"
 TEXDIR="$WORK/out/jou"
 POCKETS="$WORK/out/pockets.pdf"
+MAN="$WORK/out/fixture-man.pdf"
 POCKETS_TEX="$WORK/out/pockets.tex"
 mkdir -p "$WORK/out" "$TEXDIR"
 
@@ -63,7 +65,7 @@ render() {
   fi
 }
 
-echo "==> Rendering docx, typst, pdf (jou), pdf (jou, pocket probe)…"
+echo "==> Rendering docx, typst, pdf (jou), pdf (man), pdf (jou, pocket probe)…"
 render docx --to apaquarto-docx
 mv "$WORK/fixture.docx" "$DOCX"
 render typst --to apaquarto-typst -M keep-typ:true
@@ -72,6 +74,8 @@ mv "$WORK/fixture.typ" "$TYP"
 render jou --to apaquarto-pdf -M documentmode:jou -M keep-tex:true
 cp "$WORK/fixture.tex" "$TEXDIR/"
 cp -R "$WORK/fixture_files" "$TEXDIR/"
+render man --to apaquarto-pdf -M documentmode:man
+mv "$WORK/fixture.pdf" "$MAN"
 ( cd "$WORK" && quarto render pockets.qmd --to apaquarto-pdf -M keep-tex:true ) \
   >"$WORK/out/render-pockets.log" 2>&1 \
   || { cat "$WORK/out/render-pockets.log"; echo "FAIL render: pockets.qmd" >&2; exit 1; }
@@ -175,6 +179,51 @@ check_jou_pockets() {
   echo "  OK: no blank pocket in a jou column ($_res)"
 }
 
+# --- pdf (man) ---------------------------------------------------------------
+
+# The end of every chunk fig-cap and apa-note in the fixture must reach the man
+# PDF. Since apaquarto v7.0.0 (the #169 fix) a figure's note sits inside man's
+# [H] float, which cannot break across pages, so a long note runs off the page
+# foot, clipped, with no warning (wjschne/apaquarto#171). apa-layout does not
+# work around it; this check is how a manuscript finds out. The probe for each
+# caption or note is its last math-free span of 3+ words, compared as lowercase
+# letters and digits only. Ported from pmed's check_man_floats.
+check_man_floats() {
+  command -v pdftotext >/dev/null 2>&1 || { echo "  FAIL man_floats: pdftotext not installed"; return 1; }
+  _pdf=$(pdftotext "$MAN" - 2>/dev/null | LC_ALL=C tr '[:upper:]' '[:lower:]' | LC_ALL=C tr -cd '[:alnum:]')
+  _tails=$(awk -v sq="'" '
+    /^#\| (fig-cap|apa-note): / {
+      s = $0; sub(/^#\| (fig-cap|apa-note): /, "", s)
+      q = substr(s, 1, 1)
+      if (q == "\"" || q == sq) { s = substr(s, 2); sub(/["'"'"'][[:space:]]*$/, "", s) }
+      n = split(s, part, "$"); best = ""
+      for (i = (n % 2 ? n : n - 1); i >= 1; i -= 2)
+        if (split(part[i], w, " ") >= 3) { best = part[i]; break }
+      print (best == "" ? "NO-PROBE" : best)
+    }' "$QMD")
+  if [ -z "$_pdf" ] || [ -z "$_tails" ]; then
+    echo "  FAIL man_floats: unreadable man PDF or no chunk fig-cap/apa-note in the fixture"
+    return 1
+  fi
+  _n=0; _miss=0
+  while IFS= read -r _t; do
+    _n=$((_n + 1))
+    _l=$(printf '%s' "$_t" | LC_ALL=C tr '[:upper:]' '[:lower:]' | LC_ALL=C tr -cd '[:alnum:]')
+    case "$_pdf" in
+      *"$_l"*) [ "$_t" != NO-PROBE ] && continue ;;
+    esac
+    _miss=$((_miss + 1))
+    echo "  FAIL man_floats: caption/note ending not in man: \"$_t\""
+  done <<EOF
+$_tails
+EOF
+  if [ "$_miss" -gt 0 ]; then
+    echo "       (a figure title or note clipped at a page foot? shrink the figure; see apaquarto#171)"
+    return 1
+  fi
+  echo "  OK: man figure titles and notes complete ($_n of $_n endings found)"
+}
+
 # --- typst -------------------------------------------------------------------
 
 check_typst_math() {
@@ -201,6 +250,7 @@ check_docx_lists || FAIL=1
 check_jou_floats || FAIL=1
 check_jou_table_floats || FAIL=1
 check_jou_pockets || FAIL=1
+check_man_floats || FAIL=1
 check_jou_overfull || FAIL=1
 check_typst_math || FAIL=1
 
