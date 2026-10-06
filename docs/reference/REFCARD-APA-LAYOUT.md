@@ -1,6 +1,6 @@
 # apa-layout Reference Card
 
-> One-page reference for apa-layout 0.1.2 (apaquarto 7.0.0, Quarto >= 1.9)
+> One-page reference for apa-layout 0.2.0 (apaquarto v7.0.0 release, Quarto >= 1.9)
 
 ## Install and Enable
 
@@ -15,34 +15,32 @@
 
 | Filter | Format | Fixes |
 |---|---|---|
-| `docx-tables.lua` | docx | data tables keep the ruled `Table` style |
 | `docx-lists.lua` | docx | list items double-spaced, not `Compact` |
-| `latex-header.lua` | pdf | `jou` figures and tables float `[tbp]`; `\Needspace` before table titles |
-| `jou-float-notes.lua` | pdf `jou` | figure note stays inside its float |
+| `latex-header.lua` | pdf `jou` | figures and tables float `[tbp]` |
 | `typst-math.lua` | typst | no `\big` gap, no `\!` collision |
 
 ## Checks (`tests/run.sh`)
 
 | Check | Guards | Passes when |
 |---|---|---|
-| `docx_tables` | `docx-tables.lua` | every data table has the `Table` style |
 | `docx_lists` | `docx-lists.lua` | no list item is `Compact` |
-| `jou_notes` | `jou-float-notes.lua` | no note follows `\end{figure}` |
 | `jou_floats` | `latex-header.lua` | preamble floats figures `[tbp]` |
 | `jou_table_floats` | `latex-header.lua` | preamble floats tables `[tbp]` |
 | `jou_pockets` | `latex-header.lua` | no blank gap over 25% in a jou column |
-| `needspace` | `latex-header.lua` | preamble adds `\Needspace` |
-| `stranded_titles` | `latex-header.lua` | no table title alone at a page foot |
 | `typst_math` | `typst-math.lua` | no raw TeX, `\big` boxes or kerns |
+| `man_floats` | (apaquarto#171) | no figure title or note clipped at a man page foot |
 | `jou_overfull` | (sanity) | no overfull line wider than 1 pt |
 
-## Upstream Issues
+## Retired in 0.2.0 (fixed in apaquarto v7.0.0)
 
-| Filter | Issue |
+| Removed | Issue |
 |---|---|
 | `docx-tables.lua` | [#168](https://github.com/wjschne/apaquarto/issues/168) |
 | `jou-float-notes.lua` | [#169](https://github.com/wjschne/apaquarto/issues/169) |
-| `latex-header.lua` (`\Needspace`) | [#170](https://github.com/wjschne/apaquarto/issues/170) |
+| `\Needspace` fix in `latex-header.lua` | [#170](https://github.com/wjschne/apaquarto/issues/170) |
+
+Open upstream: [#171](https://github.com/wjschne/apaquarto/issues/171), a long
+code-chunk figure note clipped at a `man` page foot.
 
 ## Commands
 

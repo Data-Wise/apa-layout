@@ -9,7 +9,7 @@
 set -u
 
 HERE=$(cd "$(dirname "$0")" && pwd)
-ALL="docx_tables docx_lists jou_notes jou_floats needspace stranded_titles jou_table_floats jou_pockets jou_overfull typst_math"
+ALL="docx_lists jou_floats jou_table_floats jou_pockets man_floats jou_overfull typst_math"
 BAD=0
 
 # $1 = VAR=value for run.sh, $2 = label, $3 = checks expected to fail. The
@@ -34,21 +34,31 @@ expect() {
 }
 
 echo "==> Disabling each filter in turn…"
-expect APA_LAYOUT_DISABLE=docx-tables.lua     docx-tables.lua     docx_tables
 expect APA_LAYOUT_DISABLE=docx-lists.lua      docx-lists.lua      docx_lists
-expect APA_LAYOUT_DISABLE=jou-float-notes.lua jou-float-notes.lua jou_notes
-expect APA_LAYOUT_DISABLE=latex-header.lua    latex-header.lua    "jou_floats needspace stranded_titles jou_table_floats jou_pockets"
+expect APA_LAYOUT_DISABLE=latex-header.lua    latex-header.lua    "jou_floats jou_table_floats jou_pockets"
 expect APA_LAYOUT_DISABLE=typst-math.lua      typst-math.lua      typst_math
 
 echo "==> Planting a line wider than a jou column…"
 PLANTED=$(mktemp)
-trap 'rm -f "$PLANTED"' EXIT
+CLIPPED=$(mktemp)
+trap 'rm -f "$PLANTED" "$CLIPPED"' EXIT
 cat "$HERE/fixture/fixture.qmd" >"$PLANTED"
 cat >>"$PLANTED" <<'EOF'
 
 \noindent\mbox{An unbreakable line that is far wider than one column of the two-column jou layout.}
 EOF
 expect APA_LAYOUT_FIXTURE="$PLANTED" "planted overfull line" jou_overfull
+
+echo "==> Planting a figure note too long for the rest of a man page (apaquarto#171)…"
+cat "$HERE/fixture/fixture.qmd" >"$CLIPPED"
+{
+  printf '\n```{r}\n#| label: fig-tall\n#| fig-cap: "A Tall Figure With A Long Note"\n#| fig-height: 7\n#| apa-note: "'
+  for _w in one two three four five six seven eight nine ten; do
+    printf 'Sentence %s of a long note that cannot break across pages. ' "$_w"
+  done
+  printf 'Sentence eleven ends this note with the final marker words."\nplot(1:10)\n```\n'
+} >>"$CLIPPED"
+expect APA_LAYOUT_FIXTURE="$CLIPPED" "clipped figure note" man_floats
 
 if [ "$BAD" -ne 0 ]; then
   echo "NEGATIVE CONTROLS FAILED: a check did not fail as expected"

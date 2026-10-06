@@ -1,8 +1,9 @@
 # apa-layout
 
 A Quarto filter extension with layout fixes for manuscripts built on
-[apaquarto](https://github.com/wjschne/apaquarto) **7.0.0**. Each fix works
-around an upstream behavior; drop the matching filter once apaquarto fixes it.
+[apaquarto](https://github.com/wjschne/apaquarto) **7.0.0** (the release of
+2026-10-06 or later). Each fix works around an upstream behavior; drop the
+matching filter once apaquarto fixes it.
 
 ## Install
 
@@ -10,8 +11,11 @@ around an upstream behavior; drop the matching filter once apaquarto fixes it.
 quarto add Data-Wise/apa-layout
 ```
 
-Needs Quarto 1.9 or later. Then enable it with a top-level key in the
-manuscript's front matter (not under a format):
+Needs Quarto 1.9 or later and the apaquarto **v7.0.0 release**: an install from
+upstream's default branch before 2026-10-06 11:21 UTC also reports `7.0.0` but
+lacks fixes this version no longer works around, so reinstall it
+(`quarto update extension wjschne/apaquarto`). Then enable it with a
+top-level key in the manuscript's front matter (not under a format):
 
 ```yaml
 filters:
@@ -20,34 +24,43 @@ filters:
 
 Quarto names the installed folder after the repo owner, so the extension lands
 at `_extensions/Data-Wise/apa-layout`. To pin a release, use
-`quarto add Data-Wise/apa-layout@v0.1.2`.
+`quarto add Data-Wise/apa-layout@v0.2.0`.
 
 ## Filters
 
 | Filter | Format | Fixes |
 |---|---|---|
-| `docx-tables.lua` (post-render) | docx | `docxlayout.lua` gives every table inside a figure/table float the undefined, borderless `FigureLayout` style, so data tables lose their APA rules. Tables without an image go back to the reference document's `Table` style. |
 | `docx-lists.lua` | docx | Tight lists use Word's single-spaced `Compact` style; list items become double-spaced like the body. |
-| `latex-header.lua` | pdf | (1) `jou`: `floatsintext` sets every figure and in-flow table `[H]`, which leaves blank pockets in two columns; figures and tables float `[tbp]`. (2) All modes: an in-flow table caption can be stranded at a page foot (`\addcontentsline` after `\nopagebreak` leaves a break before the `longtable`); `\Needspace{14\baselineskip}` before a non-float title. |
-| `jou-float-notes.lua` (post-render) | pdf, `jou` | A code-chunk figure's `apa-note` is written after `\end{figure}`; once `jou` figures float, the note is left behind. Moves `\end{figure}` after the note. |
+| `latex-header.lua` | pdf, `jou` | `floatsintext` sets every figure and in-flow table `[H]`, which leaves blank pockets in two columns; figures and tables float `[tbp]`. `man` is untouched. |
 | `typst-math.lua` | typst | texmath writes `\bigl(`… as a `#scale()` box that keeps its unscaled width (gap inside the delimiter) and `\!\left(` as a negative kern that makes `\Phi` collide with the parenthesis. Both are dropped; Typst sizes matched delimiters itself. |
 
 Every filter checks the output format (and `documentmode` for `jou`) itself,
 so one line enables all of them.
 
-## Upstream issues
+## Retired filters
 
-Each fix has an issue on apaquarto. When one is fixed upstream, delete the
-matching filter.
+Three filters worked around bugs that apaquarto fixed in the v7.0.0 release
+(2026-10-06). apa-layout 0.2.0 removed them; stay on 0.1.2 if you must use an
+apaquarto from before that release.
 
-| Filter | Upstream issue |
+| Removed filter | Upstream issue (fixed in v7.0.0) |
 |---|---|
 | `docx-tables.lua` | [wjschne/apaquarto#168](https://github.com/wjschne/apaquarto/issues/168) |
 | `jou-float-notes.lua` | [wjschne/apaquarto#169](https://github.com/wjschne/apaquarto/issues/169) |
 | `latex-header.lua` (`\Needspace` half) | [wjschne/apaquarto#170](https://github.com/wjschne/apaquarto/issues/170) |
 
-No issue is filed for `docx-lists.lua`, the `[tbp]` half of `latex-header.lua`,
-or `typst-math.lua`; those are upstream behaviors or texmath output, not bugs
+The `\Needspace` fix gave the wrong cause: the stranded title came from
+longtable's `\LT@start` fit test, not from `\addcontentsline`.
+
+Open upstream: [wjschne/apaquarto#171](https://github.com/wjschne/apaquarto/issues/171).
+With the #169 fix, a code-chunk figure's note sits inside `man`'s `[H]` float
+and cannot break across pages, so a long note can run off the page foot and be
+clipped, with exit 0. apa-layout does not work around it; shorten the figure
+or the note. The `man_floats` check in `tests/run.sh` detects it (a planted
+long note makes it fail); copy it to a manuscript's own gate.
+
+No issue is filed for `docx-lists.lua`, the `[tbp]` filter, or
+`typst-math.lua`; those are upstream behaviors or texmath output, not bugs
 I could reproduce as such.
 
 ## Why an add-on, not a fork
@@ -78,31 +91,28 @@ tests/prove-fail.sh   # disable each filter in turn; each check must fail
 ```
 
 `tests/run.sh` renders `tests/fixture/fixture.qmd` to docx, Typst and `jou`
-PDF, and a probe (`tests/fixture/stranded.qmd`) to `man` PDF, in a temporary
-project with the apaquarto 7.0.0 vendored in `tests/vendor/` and this repo's
+PDF, and a probe (`tests/fixture/pockets.qmd`) to `jou` PDF, in a temporary
+project with the apaquarto v7.0.0 release vendored in `tests/vendor/` and this repo's
 filters, then checks:
 
 | Check | Filter | Holds when |
 |---|---|---|
-| `docx_tables` | `docx-tables.lua` | every data table carries the ruled `Table` style |
 | `docx_lists` | `docx-lists.lua` | no list item uses the single-spaced `Compact` style |
-| `jou_notes` | `jou-float-notes.lua` | no figure note follows `\end{figure}` in the `jou` tex |
 | `jou_floats` | `latex-header.lua` | the `jou` preamble redefines figures to float `[tbp]` |
 | `jou_table_floats` | `latex-header.lua` | the `jou` preamble redefines tables to float `[tbp]` |
 | `jou_pockets` | `latex-header.lua` | no column of the two-column `jou` probe has a blank gap over 25% (16 tall tables after text of varying length) |
-| `needspace` | `latex-header.lua` | the preamble puts `\Needspace` before in-flow table titles |
-| `stranded_titles` | `latex-header.lua` | no table title is left alone at a page foot in the `man` probe |
 | `typst_math` | `typst-math.lua` | the Typst output has no unconverted TeX, `\big` scale boxes or negative kerns |
+| `man_floats` | (apaquarto#171) | the end of every chunk `fig-cap` and `apa-note` in the fixture reaches the `man` PDF (not clipped at a page foot) |
 | `jou_overfull` | (sanity) | a fresh LuaLaTeX compile of the `jou` tex reports no overfull line |
 
-`jou_floats`, `jou_table_floats` and `needspace` confirm that the preamble code
-is present, not
-where LaTeX ends up placing a float or a page break; `stranded_titles` is the
-behavior check for the page-break fix. `jou_overfull` guards no
-filter; `prove-fail.sh` shows it failing on a planted overlong line. Every
+`jou_floats` and `jou_table_floats` confirm that the preamble code is present;
+`jou_pockets` is the behavior check for where a float lands. `man_floats` guards
+upstream rather than a filter, and `jou_overfull` guards no filter;
+`prove-fail.sh` shows it failing on a planted overlong line. Every
 check fails closed when its input is missing. Requires Quarto >= 1.9 (which
 bundles Typst), R with knitr, rmarkdown, ragg and svglite, LuaLaTeX, and
-`pdftotext` (poppler) and `python3`.
+`pdftotext` (poppler) and `python3`. The three retired fixes
+have no check here; the vendored v7.0.0 release is what shows they are not needed.
 
 The checks are ported from `pmed`'s layout gate (`layout-checks.sh`), where the
 fixes were first developed. A manuscript that adopts this extension can copy

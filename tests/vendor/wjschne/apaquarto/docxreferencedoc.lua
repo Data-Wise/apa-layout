@@ -35,9 +35,14 @@
 --- the binding in place for Word and gives every other viewer something to
 --- show.
 ---
+--- The link colours are written here too: a character style for each of
+--- linkcolor, urlcolor, citecolor and filecolor, which docxlinkcolor.lua
+--- hands to the links themselves.
+---
 --- Pandoc reads the reference document when it writes the output, which
 --- happens after all filters have run, so patching the reference document
---- here is picked up by the writer.
+--- here is picked up by the writer. This is the one filter that writes it,
+--- once a render, with everything the render asks for; see referencedoc.lua.
 ---
 --- The fonts, page size, line numbering and running-head control the
 --- reference document shipped with are recorded in xml comments the first
@@ -78,6 +83,7 @@ local paper_sizes = {
 }
 
 local utilsapa = require("utilsapa")
+local referencedoc = require("referencedoc")
 local trim = utilsapa.trim
 
 --- mainfont and monofont can be a stack of fonts (the html format sets
@@ -104,22 +110,6 @@ end
 
 local function make_marker(key, value)
   return "<!-- apaquarto-original-" .. key .. ": " .. value .. " -->"
-end
-
-local function read_file(path)
-  local f = io.open(path, "rb")
-  if not f then return nil end
-  local data = f:read("a")
-  f:close()
-  return data
-end
-
-local function write_file(path, data)
-  local f = io.open(path, "wb")
-  if not f then return false end
-  f:write(data)
-  f:close()
-  return true
 end
 
 --- Set the typeface of the <a:latin/> element in majorFont and minorFont
@@ -339,8 +329,8 @@ end
 --- The margins, which live in the same section properties as the page size
 --- and which pandoc takes from the reference document just as it does the
 --- size. documentmode: thesis asks for the ones the Graduate School's
---- handbook sets; every other mode keeps whatever the reference document
---- shipped with.
+--- handbook sets, and a document can ask for its own with margin; a side
+--- neither names keeps whatever the reference document shipped with.
 local function set_margins(document, margins)
   local stripped = strip_marker(document, "margins")
   local first, last = stripped:find("<w:pgMar[^>]*>")
@@ -353,12 +343,14 @@ local function set_margins(document, margins)
   local attributes = original
   if margins then
     for _, side in ipairs({ "top", "right", "bottom", "left" }) do
-      local twips = math.floor(margins[side] * 1440 + 0.5)
-      local name = "w:" .. side
-      if attributes:find(name .. '="', 1, true) then
-        attributes = attributes:gsub(name .. '="[^"]*"', name .. '="' .. twips .. '"')
-      else
-        attributes = attributes .. " " .. name .. '="' .. twips .. '"'
+      if margins[side] then
+        local twips = math.floor(margins[side] * 1440 + 0.5)
+        local name = "w:" .. side
+        if attributes:find(name .. '="', 1, true) then
+          attributes = attributes:gsub(name .. '="[^"]*"', name .. '="' .. twips .. '"')
+        else
+          attributes = attributes .. " " .. name .. '="' .. twips .. '"'
+        end
       end
     end
   end
@@ -591,8 +583,7 @@ local function patch_header(header, runninghead)
 end
 
 function Pandoc(doc)
-  local refdoc = PANDOC_WRITER_OPTIONS.reference_doc
-  if not refdoc then return nil end
+  if not PANDOC_WRITER_OPTIONS.reference_doc then return nil end
 
   local mainfont = clean_font(doc.meta.mainfont)
   local monofont = clean_font(doc.meta.monofont)
@@ -603,7 +594,15 @@ function Pandoc(doc)
   --- its title page carries no running head. Both belong to the section, and
   --- the section is the reference document's.
   local thesis = utilsapa.mode(doc.meta) == "thesis"
-  local margins = thesis and utilsapa.thesis_margins or nil
+  --- A document's own margin field is laid over that, side by side, so a
+  --- side it does not name keeps the mode's margin, or the reference
+  --- document's in every mode but thesis.
+  local margins = nil
+  if thesis then
+    margins = utilsapa.thesis_body_margins(doc.meta, true)
+  else
+    margins = utilsapa.margin_sides(doc.meta.margin, true)
+  end
   --- The body of a dissertation begins again at 1, in arabic; the front
   --- matter before it is in lower-case roman, which the title page's own
   --- section sets.
@@ -623,18 +622,15 @@ function Pandoc(doc)
     runninghead = ""
   end
 
-  local data = read_file(refdoc)
-  if not data then
-    quarto.log.warning("Could not read reference document " .. refdoc ..
-      ", so mainfont, monofont, papersize and numbered-lines were not applied.")
-    return nil
-  end
+  --- The colour each of linkcolor, urlcolor, citecolor and filecolor asks
+  --- for, which become character styles in word/styles.xml.
+  local linkcolours = referencedoc.link_colours(doc.meta)
 
-  local ok, archive = pcall(pandoc.zip.Archive, data)
-  if not ok then
-    quarto.log.warning("Could not read reference document " .. refdoc ..
-      " as a docx file, so mainfont, monofont, papersize and numbered-lines" ..
-      " were not applied.")
+  local archive, refdoc = referencedoc.read()
+  if not archive then
+    quarto.log.warning("Reference document: " .. refdoc ..
+      ", so mainfont, monofont, papersize, numbered-lines and the link" ..
+      " colours were not applied.")
     return nil
   end
 
@@ -669,7 +665,13 @@ function Pandoc(doc)
       patched = patch_styles(xml, monofont, thesis)
       if not patched then
         quarto.log.warning("Reference document " .. refdoc ..
-          " has no styles, monofont was not applied.")
+          " has no styles, monofont and the link colours were not applied.")
+      else
+        patched = referencedoc.patch_link_styles(patched, linkcolours)
+        --- The style a quotation's dash attribution takes, for a document
+        --- that has one (apaquote.lua).
+        patched = referencedoc.patch_attribution_style(patched,
+          utilsapa.flag(doc.meta, "apa-quote-attribution"))
       end
     elseif entry.path == document_path then
       xml = entry:contents()
@@ -697,9 +699,10 @@ function Pandoc(doc)
   if not changed then return nil end
 
   archive.entries = newentries
-  if not write_file(refdoc, archive:bytestring()) then
+  if not referencedoc.write(archive) then
     quarto.log.warning("Could not write reference document " .. refdoc ..
-      ", so mainfont, monofont, papersize and numbered-lines were not applied.")
+      ", so mainfont, monofont, papersize, numbered-lines and the link" ..
+      " colours were not applied.")
   end
 
   return nil

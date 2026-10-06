@@ -2,19 +2,20 @@ project: apa-layout
 status: active
 priority: P2
 progress: 100
-version: 0.1.2
-updated: 2026-10-05
-next: adopt in other manuscripts (per-repo request); file upstream apaquarto issues (draft only)
+version: 0.2.0
+updated: 2026-10-06
+next: adopt in other manuscripts (per-repo request)
 
-## Release: v0.1.2 (v0.1.0, v0.1.1 on 2026-10-05; 0.1.1 was docs/CI only)
+## Release: v0.2.0 (2026-10-06; v0.1.0-v0.1.2 on 2026-10-05; 0.1.1 was docs/CI only)
 
 Published 2026-10-05 at https://github.com/Data-Wise/apa-layout (public, MIT).
 Install: `quarto add Data-Wise/apa-layout`; filter reference `Data-Wise/apa-layout`
 (Quarto names the folder after the repo owner, not the in-repo `dtofighi/`).
 
-- Five filters fix apaquarto 7.0.0 layout bugs (docx tables/lists, jou figure
-  floats and notes, stranded table captions, Typst \big/\! math).
-- `tests/run.sh` (10 checks) and `tests/prove-fail.sh` (negative controls).
+- 0.2.0 retires docx-tables, jou-float-notes and the \Needspace fix (apaquarto
+  v7.0.0 fixed #168/#169/#170; issues apa-layout#15-#17). Three filters remain:
+  docx-lists, jou [tbp] floats, Typst \big/\! math.
+- `tests/run.sh` (7 checks) and `tests/prove-fail.sh` (negative controls).
 - Workflow (craft style): feature/* -> dev (squash) -> main (release PR, merge
   commit). main protected; dev has a deletion-only ruleset.
 - CI (`.github/workflows/test.yml`): `layout` job runs both test scripts on PRs and
