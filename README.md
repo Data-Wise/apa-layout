@@ -4,6 +4,26 @@ A Quarto filter extension with layout fixes for manuscripts built on
 [apaquarto](https://github.com/wjschne/apaquarto) **7.0.0**. Each fix works
 around an upstream behavior; drop the matching filter once apaquarto fixes it.
 
+## Install
+
+```bash
+quarto add Data-Wise/apa-layout
+```
+
+Needs Quarto 1.9 or later. Then enable it with a top-level key in the
+manuscript's front matter (not under a format):
+
+```yaml
+filters:
+  - Data-Wise/apa-layout
+```
+
+Quarto names the installed folder after the repo owner, so the extension lands
+at `_extensions/Data-Wise/apa-layout`. To pin a release, use
+`quarto add Data-Wise/apa-layout@v0.1.1`.
+
+## Filters
+
 | Filter | Format | Fixes |
 |---|---|---|
 | `docx-tables.lua` (post-render) | docx | `docxlayout.lua` gives every table inside a figure/table float the undefined, borderless `FigureLayout` style, so data tables lose their APA rules. Tables without an image go back to the reference document's `Table` style. |
@@ -24,26 +44,11 @@ add-on, each filter is deleted when upstream fixes the bug it works around.
 Revisit only if a fix needs apaquarto's internals changed (its LaTeX
 template, title page, or docx reference document).
 
-## Use
+## Offline install
 
-Install from GitHub (needs Quarto 1.9 or later):
-
-```bash
-quarto add Data-Wise/apa-layout
-```
-
-Quarto names the installed folder after the repo owner, so the extension lands
-at `_extensions/Data-Wise/apa-layout`. Add a top-level key to the manuscript's
-front matter (not under a format):
-
-```yaml
-filters:
-  - Data-Wise/apa-layout
-```
-
-Offline, copy the folder instead. This keeps the `dtofighi/` namespace, so the
-filter reference is `dtofighi/apa-layout`; the two names are interchangeable,
-since a filter reference is only a folder path:
+If `quarto add` is not an option, copy the folder instead. This keeps the
+`dtofighi/` namespace, so the filter reference is `dtofighi/apa-layout`; the two
+names are interchangeable, since a filter reference is only a folder path:
 
 ```bash
 mkdir -p _extensions/dtofighi
