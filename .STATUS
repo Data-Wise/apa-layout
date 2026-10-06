@@ -4,7 +4,7 @@ priority: P2
 progress: 100
 version: 0.1.0
 updated: 2026-10-05
-next: adopt in other apaquarto manuscripts (per-repo request); file upstream apaquarto issues (draft only)
+next: release PR dev -> main (carries README, docs, CI); then adopt in other manuscripts (per-repo request); file upstream apaquarto issues (draft only)
 
 ## Release: v0.1.0
 
@@ -17,6 +17,8 @@ Install: `quarto add Data-Wise/apa-layout`; filter reference `Data-Wise/apa-layo
 - `tests/run.sh` (7 checks) and `tests/prove-fail.sh` (negative controls).
 - Workflow (craft style): feature/* -> dev (squash) -> main (release PR, merge
   commit). main protected; dev has a deletion-only ruleset.
+- CI (`.github/workflows/test.yml`): `layout` job runs both test scripts on PRs and
+  pushes to main/dev. Not yet a required check on main.
 - Consumer: pmed vendors a byte-identical copy at `_extensions/dtofighi/apa-layout`.
 
 ## Not in scope
