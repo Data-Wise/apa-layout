@@ -4,6 +4,38 @@ All notable changes to apa-layout are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and versions follow
 [Semantic Versioning](https://semver.org/).
 
+## [0.1.2] - 2026-10-05
+
+### Changed
+
+- `latex-header.lua`: in `jou`, in-flow tables float `[tbp]` as figures already
+  did. `floatsintext` sets them `[H]`, and a tall `[H]` table that misses the
+  rest of a column jumps to the next one, leaving a blank pocket (jou columns are
+  flush-bottom, so the space is spread inside the column). Found on a real
+  manuscript: 187 pt blank on one page, 63% of a column on another. A table that
+  spans both columns (`apa-twocolumn`) is untouched, and so is `man`.
+
+### Added
+
+- `jou_table_floats` check (the preamble floats tables `[tbp]`) and `jou_pockets`
+  check: `tests/fixture/pockets.qmd` is a two-column `jou` probe with 16 tall
+  tables after text of varying length, and `tests/pdf-gaps.py` counts column
+  gaps over 25% of the text height. With the filter disabled the probe has 11
+  pockets (worst 44%), with it none. Needs `python3`.
+- Guide and refcard: how to make a wide `jou` table span both columns
+  (`apa-twocolumn="true"`).
+- `stranded_titles` check: `tests/fixture/stranded.qmd` puts a table after
+  every offset from 0 to 29 filler lines in a `man` PDF; the check fails if a
+  table title is left alone at a page foot. It fails when `latex-header.lua`
+  is disabled (2 of 30 titles stranded locally) and passes with it, so it
+  tests the `\Needspace` fix itself, not just its injection. Needs
+  `pdftotext` (poppler).
+- Upstream issues filed for three of the fixes
+  ([#168](https://github.com/wjschne/apaquarto/issues/168),
+  [#169](https://github.com/wjschne/apaquarto/issues/169),
+  [#170](https://github.com/wjschne/apaquarto/issues/170)), linked from the
+  README, guide and reference card.
+
 ## [0.1.1] - 2026-10-05
 
 No change to the filters; installing 0.1.1 gives the same behavior as 0.1.0.
@@ -52,5 +84,6 @@ Quarto >= 1.9.0.
   its filter is disabled.
 - MIT license.
 
+[0.1.2]: https://github.com/Data-Wise/apa-layout/releases/tag/v0.1.2
 [0.1.1]: https://github.com/Data-Wise/apa-layout/releases/tag/v0.1.1
 [0.1.0]: https://github.com/Data-Wise/apa-layout/releases/tag/v0.1.0

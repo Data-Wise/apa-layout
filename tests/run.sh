@@ -16,6 +16,9 @@
 #   jou_notes      jou-float-notes.lua  a figure's note stays inside its jou float
 #   jou_floats     latex-header.lua     jou figures float [tbp], not [H]
 #   needspace      latex-header.lua     \Needspace before an in-flow table title
+#   stranded_titles latex-header.lua    no table title alone at a page foot (man PDF)
+#   jou_table_floats latex-header.lua   jou tables float [tbp], not [H]
+#   jou_pockets    latex-header.lua     no blank pocket in a jou column (jou probe PDF)
 #   typst_math     typst-math.lua       no \big scale boxes or \! negative kerns
 #   jou_overfull   (sanity)             the jou build compiles, no overfull line
 #
@@ -36,6 +39,8 @@ trap cleanup EXIT
 
 mkdir -p "$WORK/_extensions/dtofighi"
 cp "$FIXTURE" "$WORK/fixture.qmd"
+cp "$HERE/fixture/stranded.qmd" "$WORK/stranded.qmd"
+cp "$HERE/fixture/pockets.qmd" "$WORK/pockets.qmd"
 cp -R "$HERE/vendor/wjschne" "$WORK/_extensions/"
 cp -R "$ROOT/$EXT" "$WORK/$EXT"
 for _f in ${APA_LAYOUT_DISABLE:-}; do
@@ -49,6 +54,9 @@ DOCX="$WORK/out/fixture.docx"
 TYP="$WORK/out/fixture.typ"
 TYPLOG="$WORK/out/typst.log"
 TEXDIR="$WORK/out/jou"
+STRANDED="$WORK/out/stranded.pdf"
+POCKETS="$WORK/out/pockets.pdf"
+POCKETS_TEX="$WORK/out/pockets.tex"
 mkdir -p "$WORK/out" "$TEXDIR"
 
 render() {
@@ -60,7 +68,7 @@ render() {
   fi
 }
 
-echo "==> Rendering docx, typst, pdf (jou)…"
+echo "==> Rendering docx, typst, pdf (jou), pdf (man, stranded probe), pdf (jou, pocket probe)…"
 render docx --to apaquarto-docx
 mv "$WORK/fixture.docx" "$DOCX"
 render typst --to apaquarto-typst -M keep-typ:true
@@ -69,6 +77,15 @@ mv "$WORK/fixture.typ" "$TYP"
 render jou --to apaquarto-pdf -M documentmode:jou -M keep-tex:true
 cp "$WORK/fixture.tex" "$TEXDIR/"
 cp -R "$WORK/fixture_files" "$TEXDIR/"
+( cd "$WORK" && quarto render stranded.qmd --to apaquarto-pdf -M documentmode:man ) \
+  >"$WORK/out/render-stranded.log" 2>&1 \
+  || { cat "$WORK/out/render-stranded.log"; echo "FAIL render: stranded.qmd" >&2; exit 1; }
+mv "$WORK/stranded.pdf" "$STRANDED"
+( cd "$WORK" && quarto render pockets.qmd --to apaquarto-pdf -M keep-tex:true ) \
+  >"$WORK/out/render-pockets.log" 2>&1 \
+  || { cat "$WORK/out/render-pockets.log"; echo "FAIL render: pockets.qmd" >&2; exit 1; }
+mv "$WORK/pockets.pdf" "$POCKETS"
+mv "$WORK/pockets.tex" "$POCKETS_TEX"
 
 # --- docx --------------------------------------------------------------------
 
@@ -182,6 +199,75 @@ check_jou_overfull() {
   echo "  OK: jou has no line wider than its column (fresh LuaLaTeX log)"
 }
 
+# The jou preamble must redefine table to float [tbp], next to the figure
+# redefinition. Like jou_floats, this checks the injection, not a placement.
+check_jou_table_floats() {
+  if ! grep -qF '\apalayout@table[tbp]' "$TEXDIR/fixture.tex" 2>/dev/null; then
+    echo "  FAIL jou_table_floats: jou preamble does not float tables [tbp]"
+    echo "       (latex-header.lua no longer injects its table block?)"
+    return 1
+  fi
+  echo "  OK: jou tables float [tbp]"
+}
+
+# The probe is two-column jou with 16 tall in-flow tables after text of varying
+# length. With tables [H] a table that misses the rest of a column jumps to the
+# next one and leaves a blank pocket (spread inside the column, which is
+# flush-bottom); tests/pdf-gaps.py counts them. Fails closed unless the probe
+# is jou (the tex has \apajoufloats), has every table, and python3 and
+# pdftotext exist.
+check_jou_pockets() {
+  command -v python3 >/dev/null 2>&1 || { echo "  FAIL jou_pockets: python3 not installed"; return 1; }
+  command -v pdftotext >/dev/null 2>&1 || { echo "  FAIL jou_pockets: pdftotext not installed"; return 1; }
+  if ! grep -q '^\\apajoufloats' "$POCKETS_TEX" 2>/dev/null; then
+    printf '%s\n' "  FAIL jou_pockets: the pocket probe is not a jou build (no \apajoufloats call)"
+    return 1
+  fi
+  _want=$(grep -c '{#tbl-p' "$WORK/pockets.qmd" || true)
+  _have=$(pdftotext "$POCKETS" - 2>/dev/null | grep -c 'Pocket Table' || true)
+  _res=$(python3 "$HERE/pdf-gaps.py" "$POCKETS")
+  _pockets=${_res#pockets=}; _pockets=${_pockets%% *}
+  if [ "${_want:-0}" -eq 0 ] || [ "${_have:-0}" -lt "$_want" ] || [ "${_pockets:--1}" -lt 0 ]; then
+    echo "  FAIL jou_pockets: probe incomplete ($_have of $_want tables; $_res)"
+    return 1
+  fi
+  if [ "$_pockets" -gt 0 ]; then
+    echo "  FAIL jou_pockets: $_res"
+    echo "       (latex-header.lua no longer floats jou tables?)"
+    return 1
+  fi
+  echo "  OK: no blank pocket in a jou column ($_res)"
+}
+
+# The probe puts a table after 0..29 filler lines, so without latex-header.lua's
+# \Needspace some table title lands alone at a page foot. A page whose last
+# lines hold a "Probe Table" caption (the table body is on the next page)
+# counts as stranded. Fails closed unless every probe table was rendered.
+check_stranded_titles() {
+  command -v pdftotext >/dev/null 2>&1 || { echo "  FAIL stranded_titles: pdftotext not installed"; return 1; }
+  _want=$(grep -c '{#tbl-q' "$WORK/stranded.qmd" || true)
+  _have=$(pdftotext "$STRANDED" - 2>/dev/null | grep -c 'Probe Table' || true)
+  _pages=$(pdfinfo "$STRANDED" 2>/dev/null | awk '/^Pages:/ {print $2}')
+  if [ "${_want:-0}" -eq 0 ] || [ "${_have:-0}" -lt "$_want" ] || [ "${_pages:-0}" -lt 3 ]; then
+    echo "  FAIL stranded_titles: probe incomplete ($_have of $_want titles in ${_pages:-0} pages)"
+    return 1
+  fi
+  _bad=0
+  _p=1
+  while [ "$_p" -le "$_pages" ]; do
+    if pdftotext -f "$_p" -l "$_p" -layout "$STRANDED" - | sed '/^[[:space:]]*$/d' | tail -3 | grep -q 'Probe Table'; then
+      _bad=$((_bad + 1))
+    fi
+    _p=$((_p + 1))
+  done
+  if [ "$_bad" -gt 0 ]; then
+    echo "  FAIL stranded_titles: $_bad page(s) end with a table title, its table on the next page"
+    echo "       (latex-header.lua no longer asks for room before in-flow titles?)"
+    return 1
+  fi
+  echo "  OK: no table title stranded at a page foot ($_have tables, $_pages pages)"
+}
+
 # --- typst -------------------------------------------------------------------
 
 check_typst_math() {
@@ -209,6 +295,9 @@ check_docx_lists || FAIL=1
 check_jou_notes || FAIL=1
 check_jou_floats || FAIL=1
 check_needspace || FAIL=1
+check_stranded_titles || FAIL=1
+check_jou_table_floats || FAIL=1
+check_jou_pockets || FAIL=1
 check_jou_overfull || FAIL=1
 check_typst_math || FAIL=1
 
