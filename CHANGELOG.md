@@ -4,7 +4,7 @@ All notable changes to apa-layout are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and versions follow
 [Semantic Versioning](https://semver.org/).
 
-## [0.2.0] - Unreleased
+## [0.2.0] - 2026-10-06
 
 Needs the apaquarto **v7.0.0 release** (2026-10-06 11:21 UTC or later). An
 install from upstream's default branch before then also reports `7.0.0` but
@@ -133,6 +133,7 @@ Quarto >= 1.9.0.
   its filter is disabled.
 - MIT license.
 
+[0.2.0]: https://github.com/Data-Wise/apa-layout/releases/tag/v0.2.0
 [0.1.2]: https://github.com/Data-Wise/apa-layout/releases/tag/v0.1.2
 [0.1.1]: https://github.com/Data-Wise/apa-layout/releases/tag/v0.1.1
 [0.1.0]: https://github.com/Data-Wise/apa-layout/releases/tag/v0.1.0
