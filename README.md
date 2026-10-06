@@ -20,7 +20,7 @@ filters:
 
 Quarto names the installed folder after the repo owner, so the extension lands
 at `_extensions/Data-Wise/apa-layout`. To pin a release, use
-`quarto add Data-Wise/apa-layout@v0.1.1`.
+`quarto add Data-Wise/apa-layout@v0.1.2`.
 
 ## Filters
 
@@ -28,7 +28,7 @@ at `_extensions/Data-Wise/apa-layout`. To pin a release, use
 |---|---|---|
 | `docx-tables.lua` (post-render) | docx | `docxlayout.lua` gives every table inside a figure/table float the undefined, borderless `FigureLayout` style, so data tables lose their APA rules. Tables without an image go back to the reference document's `Table` style. |
 | `docx-lists.lua` | docx | Tight lists use Word's single-spaced `Compact` style; list items become double-spaced like the body. |
-| `latex-header.lua` | pdf | (1) `jou`: `floatsintext` sets every figure `[H]`, which leaves blank pockets in two columns; figures float `[tbp]`. (2) All modes: an in-flow table caption can be stranded at a page foot (`\addcontentsline` after `\nopagebreak` leaves a break before the `longtable`); `\Needspace{14\baselineskip}` before a non-float title. |
+| `latex-header.lua` | pdf | (1) `jou`: `floatsintext` sets every figure and in-flow table `[H]`, which leaves blank pockets in two columns; figures and tables float `[tbp]`. (2) All modes: an in-flow table caption can be stranded at a page foot (`\addcontentsline` after `\nopagebreak` leaves a break before the `longtable`); `\Needspace{14\baselineskip}` before a non-float title. |
 | `jou-float-notes.lua` (post-render) | pdf, `jou` | A code-chunk figure's `apa-note` is written after `\end{figure}`; once `jou` figures float, the note is left behind. Moves `\end{figure}` after the note. |
 | `typst-math.lua` | typst | texmath writes `\bigl(`… as a `#scale()` box that keeps its unscaled width (gap inside the delimiter) and `\!\left(` as a negative kern that makes `\Phi` collide with the parenthesis. Both are dropped; Typst sizes matched delimiters itself. |
 
@@ -88,18 +88,21 @@ filters, then checks:
 | `docx_lists` | `docx-lists.lua` | no list item uses the single-spaced `Compact` style |
 | `jou_notes` | `jou-float-notes.lua` | no figure note follows `\end{figure}` in the `jou` tex |
 | `jou_floats` | `latex-header.lua` | the `jou` preamble redefines figures to float `[tbp]` |
+| `jou_table_floats` | `latex-header.lua` | the `jou` preamble redefines tables to float `[tbp]` |
+| `jou_pockets` | `latex-header.lua` | no column of the two-column `jou` probe has a blank gap over 25% (16 tall tables after text of varying length) |
 | `needspace` | `latex-header.lua` | the preamble puts `\Needspace` before in-flow table titles |
 | `stranded_titles` | `latex-header.lua` | no table title is left alone at a page foot in the `man` probe |
 | `typst_math` | `typst-math.lua` | the Typst output has no unconverted TeX, `\big` scale boxes or negative kerns |
 | `jou_overfull` | (sanity) | a fresh LuaLaTeX compile of the `jou` tex reports no overfull line |
 
-`jou_floats` and `needspace` confirm that the preamble code is present, not
+`jou_floats`, `jou_table_floats` and `needspace` confirm that the preamble code
+is present, not
 where LaTeX ends up placing a float or a page break; `stranded_titles` is the
 behavior check for the page-break fix. `jou_overfull` guards no
 filter; `prove-fail.sh` shows it failing on a planted overlong line. Every
 check fails closed when its input is missing. Requires Quarto >= 1.9 (which
 bundles Typst), R with knitr, rmarkdown, ragg and svglite, LuaLaTeX, and
-`pdftotext` (poppler).
+`pdftotext` (poppler) and `python3`.
 
 The checks are ported from `pmed`'s layout gate (`layout-checks.sh`), where the
 fixes were first developed. A manuscript that adopts this extension can copy

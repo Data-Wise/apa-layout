@@ -1,0 +1,455 @@
+---
+title: "Pocket probe"
+shorttitle: "PROBE"
+author:
+  - name: Test Author
+    corresponding: true
+    email: test@example.com
+    affiliations:
+      - name: Example University
+abstract: >-
+  Tall in-flow tables after text of varying length in two-column jou, so that
+  without apa-layout's table floats a table that misses the rest of a column
+  jumps to the next one and leaves a blank pocket. Rendered by tests/run.sh
+  (jou, PDF only); tests/pdf-gaps.py counts the pockets.
+keywords: [probe]
+documentmode: jou
+floatsintext: true
+filters:
+  - dtofighi/apa-layout
+execute:
+  echo: false
+---
+
+epsilon nu beta gamma sigma delta mu tau beta rho eta beta gamma xi xi gamma theta gamma sigma xi beta tau delta theta tau beta tau tau nu beta theta beta sigma epsilon kappa xi epsilon sigma delta tau kappa sigma zeta delta tau tau eta mu delta sigma gamma tau beta upsilon eta pi sigma xi lambda omicron tau omicron mu kappa theta zeta.
+
+| A | B | C |
+|---|---|---|
+| r1 | 1 | 1 |
+| r2 | 2 | 2 |
+| r3 | 3 | 3 |
+| r4 | 4 | 4 |
+| r5 | 5 | 5 |
+| r6 | 6 | 6 |
+| r7 | 7 | 7 |
+| r8 | 8 | 8 |
+| r9 | 9 | 9 |
+| r10 | 10 | 10 |
+| r11 | 11 | 11 |
+| r12 | 12 | 12 |
+| r13 | 13 | 13 |
+| r14 | 14 | 14 |
+| r15 | 15 | 15 |
+| r16 | 16 | 16 |
+| r17 | 17 | 17 |
+| r18 | 18 | 18 |
+| r19 | 19 | 19 |
+| r20 | 20 | 20 |
+| r21 | 21 | 21 |
+: Pocket Table 1 {#tbl-p1}
+
+theta gamma tau kappa rho pi lambda omicron kappa upsilon gamma delta rho xi zeta lambda epsilon pi xi beta gamma sigma tau lambda lambda mu upsilon pi tau omicron gamma gamma iota pi gamma beta kappa tau omicron kappa nu mu alpha omicron mu zeta upsilon delta pi beta eta kappa epsilon theta nu nu pi gamma zeta omicron nu sigma iota epsilon xi sigma iota xi mu nu theta epsilon gamma zeta epsilon theta theta alpha pi tau zeta iota kappa alpha epsilon xi sigma mu upsilon tau lambda epsilon rho upsilon beta omicron sigma nu nu nu nu delta pi nu beta eta gamma eta omicron zeta delta lambda upsilon beta.
+
+| A | B | C |
+|---|---|---|
+| r1 | 1 | 2 |
+| r2 | 2 | 4 |
+| r3 | 3 | 6 |
+| r4 | 4 | 8 |
+| r5 | 5 | 10 |
+| r6 | 6 | 12 |
+| r7 | 7 | 14 |
+| r8 | 8 | 16 |
+| r9 | 9 | 18 |
+| r10 | 10 | 20 |
+| r11 | 11 | 22 |
+| r12 | 12 | 24 |
+| r13 | 13 | 26 |
+| r14 | 14 | 28 |
+| r15 | 15 | 30 |
+| r16 | 16 | 32 |
+| r17 | 17 | 34 |
+| r18 | 18 | 36 |
+| r19 | 19 | 38 |
+| r20 | 20 | 40 |
+| r21 | 21 | 42 |
+: Pocket Table 2 {#tbl-p2}
+
+alpha tau epsilon sigma delta mu upsilon alpha gamma eta upsilon nu epsilon iota mu upsilon mu pi delta delta pi omicron pi pi kappa gamma epsilon delta lambda iota pi zeta rho alpha eta rho mu epsilon.
+
+| A | B | C |
+|---|---|---|
+| r1 | 1 | 3 |
+| r2 | 2 | 6 |
+| r3 | 3 | 9 |
+| r4 | 4 | 12 |
+| r5 | 5 | 15 |
+| r6 | 6 | 18 |
+| r7 | 7 | 21 |
+| r8 | 8 | 24 |
+| r9 | 9 | 27 |
+| r10 | 10 | 30 |
+| r11 | 11 | 33 |
+| r12 | 12 | 36 |
+| r13 | 13 | 39 |
+| r14 | 14 | 42 |
+| r15 | 15 | 45 |
+| r16 | 16 | 48 |
+| r17 | 17 | 51 |
+| r18 | 18 | 54 |
+| r19 | 19 | 57 |
+| r20 | 20 | 60 |
+| r21 | 21 | 63 |
+: Pocket Table 3 {#tbl-p3}
+
+sigma alpha rho kappa gamma iota rho mu zeta mu theta sigma sigma rho lambda theta upsilon eta theta nu theta eta rho pi mu alpha alpha iota pi iota eta upsilon mu omicron mu mu gamma theta delta theta pi eta lambda eta pi upsilon upsilon alpha pi mu gamma delta nu eta pi zeta xi lambda gamma nu omicron nu gamma zeta zeta epsilon alpha epsilon tau omicron epsilon upsilon upsilon pi mu epsilon sigma sigma epsilon alpha alpha delta rho epsilon xi eta eta alpha iota eta kappa rho theta tau lambda iota sigma xi epsilon beta mu omicron tau rho xi rho epsilon sigma epsilon rho rho alpha omicron.
+
+| A | B | C |
+|---|---|---|
+| r1 | 1 | 4 |
+| r2 | 2 | 8 |
+| r3 | 3 | 12 |
+| r4 | 4 | 16 |
+| r5 | 5 | 20 |
+| r6 | 6 | 24 |
+| r7 | 7 | 28 |
+| r8 | 8 | 32 |
+| r9 | 9 | 36 |
+| r10 | 10 | 40 |
+| r11 | 11 | 44 |
+| r12 | 12 | 48 |
+| r13 | 13 | 52 |
+| r14 | 14 | 56 |
+| r15 | 15 | 60 |
+| r16 | 16 | 64 |
+| r17 | 17 | 68 |
+| r18 | 18 | 72 |
+| r19 | 19 | 76 |
+| r20 | 20 | 80 |
+| r21 | 21 | 84 |
+: Pocket Table 4 {#tbl-p4}
+
+zeta upsilon alpha epsilon zeta epsilon pi upsilon delta sigma beta lambda rho rho sigma pi delta sigma beta theta eta iota beta delta rho omicron sigma alpha gamma omicron lambda upsilon rho upsilon rho eta iota omicron rho sigma pi rho theta rho iota sigma eta omicron epsilon xi delta nu omicron lambda gamma theta xi gamma eta kappa delta epsilon mu epsilon iota epsilon omicron theta delta nu pi zeta theta zeta xi rho nu lambda xi eta mu lambda gamma mu alpha lambda sigma omicron omicron alpha nu lambda rho upsilon kappa rho gamma delta theta delta gamma iota iota beta zeta iota epsilon xi iota nu epsilon sigma rho tau pi lambda gamma iota beta zeta xi gamma iota alpha.
+
+| A | B | C |
+|---|---|---|
+| r1 | 1 | 5 |
+| r2 | 2 | 10 |
+| r3 | 3 | 15 |
+| r4 | 4 | 20 |
+| r5 | 5 | 25 |
+| r6 | 6 | 30 |
+| r7 | 7 | 35 |
+| r8 | 8 | 40 |
+| r9 | 9 | 45 |
+| r10 | 10 | 50 |
+| r11 | 11 | 55 |
+| r12 | 12 | 60 |
+| r13 | 13 | 65 |
+| r14 | 14 | 70 |
+| r15 | 15 | 75 |
+| r16 | 16 | 80 |
+| r17 | 17 | 85 |
+| r18 | 18 | 90 |
+| r19 | 19 | 95 |
+| r20 | 20 | 100 |
+| r21 | 21 | 105 |
+: Pocket Table 5 {#tbl-p5}
+
+gamma iota gamma upsilon theta gamma iota delta omicron alpha lambda sigma xi iota upsilon epsilon beta rho theta delta zeta iota beta zeta eta kappa kappa rho eta kappa omicron rho zeta iota mu alpha iota beta alpha alpha rho sigma eta rho pi theta omicron delta xi pi sigma nu rho kappa eta theta lambda eta epsilon nu mu beta epsilon alpha gamma iota xi zeta beta gamma nu rho kappa upsilon theta kappa beta omicron zeta zeta iota omicron alpha iota mu lambda sigma lambda theta beta kappa eta mu zeta alpha lambda nu gamma pi iota rho eta theta rho alpha gamma.
+
+| A | B | C |
+|---|---|---|
+| r1 | 1 | 6 |
+| r2 | 2 | 12 |
+| r3 | 3 | 18 |
+| r4 | 4 | 24 |
+| r5 | 5 | 30 |
+| r6 | 6 | 36 |
+| r7 | 7 | 42 |
+| r8 | 8 | 48 |
+| r9 | 9 | 54 |
+| r10 | 10 | 60 |
+| r11 | 11 | 66 |
+| r12 | 12 | 72 |
+| r13 | 13 | 78 |
+| r14 | 14 | 84 |
+| r15 | 15 | 90 |
+| r16 | 16 | 96 |
+| r17 | 17 | 102 |
+| r18 | 18 | 108 |
+| r19 | 19 | 114 |
+| r20 | 20 | 120 |
+| r21 | 21 | 126 |
+: Pocket Table 6 {#tbl-p6}
+
+gamma epsilon nu tau beta nu alpha kappa kappa theta gamma tau rho epsilon upsilon nu lambda pi epsilon kappa upsilon epsilon beta rho xi rho epsilon rho rho tau alpha tau theta gamma alpha beta epsilon mu delta nu omicron sigma beta alpha sigma theta pi iota alpha omicron gamma rho sigma gamma rho gamma pi iota.
+
+| A | B | C |
+|---|---|---|
+| r1 | 1 | 7 |
+| r2 | 2 | 14 |
+| r3 | 3 | 21 |
+| r4 | 4 | 28 |
+| r5 | 5 | 35 |
+| r6 | 6 | 42 |
+| r7 | 7 | 49 |
+| r8 | 8 | 56 |
+| r9 | 9 | 63 |
+| r10 | 10 | 70 |
+| r11 | 11 | 77 |
+| r12 | 12 | 84 |
+| r13 | 13 | 91 |
+| r14 | 14 | 98 |
+| r15 | 15 | 105 |
+| r16 | 16 | 112 |
+| r17 | 17 | 119 |
+| r18 | 18 | 126 |
+| r19 | 19 | 133 |
+| r20 | 20 | 140 |
+| r21 | 21 | 147 |
+: Pocket Table 7 {#tbl-p7}
+
+gamma iota theta eta theta omicron pi nu gamma pi kappa beta upsilon eta gamma upsilon epsilon lambda iota kappa upsilon tau epsilon alpha pi beta pi iota delta eta pi kappa rho kappa omicron omicron omicron delta sigma eta kappa gamma pi alpha kappa omicron gamma rho omicron iota nu eta eta gamma tau gamma epsilon rho iota mu epsilon upsilon rho iota delta mu theta pi pi nu alpha zeta alpha pi omicron nu kappa epsilon xi mu nu lambda delta lambda alpha lambda lambda nu delta eta alpha kappa iota mu gamma nu nu tau gamma mu xi iota beta iota delta beta kappa epsilon theta iota xi rho lambda eta mu xi alpha nu sigma sigma eta gamma beta xi omicron upsilon epsilon kappa.
+
+| A | B | C |
+|---|---|---|
+| r1 | 1 | 8 |
+| r2 | 2 | 16 |
+| r3 | 3 | 24 |
+| r4 | 4 | 32 |
+| r5 | 5 | 40 |
+| r6 | 6 | 48 |
+| r7 | 7 | 56 |
+| r8 | 8 | 64 |
+| r9 | 9 | 72 |
+| r10 | 10 | 80 |
+| r11 | 11 | 88 |
+| r12 | 12 | 96 |
+| r13 | 13 | 104 |
+| r14 | 14 | 112 |
+| r15 | 15 | 120 |
+| r16 | 16 | 128 |
+| r17 | 17 | 136 |
+| r18 | 18 | 144 |
+| r19 | 19 | 152 |
+| r20 | 20 | 160 |
+| r21 | 21 | 168 |
+: Pocket Table 8 {#tbl-p8}
+
+beta sigma epsilon zeta pi xi lambda kappa kappa iota iota nu theta kappa pi sigma nu delta zeta zeta gamma eta rho pi sigma theta omicron lambda omicron xi epsilon sigma eta theta gamma zeta lambda sigma gamma lambda theta mu iota tau eta alpha xi nu xi rho eta nu iota lambda beta pi iota tau mu epsilon rho rho eta gamma iota theta nu nu omicron xi kappa alpha epsilon beta xi pi tau pi alpha gamma nu rho omicron omicron theta delta theta.
+
+| A | B | C |
+|---|---|---|
+| r1 | 1 | 9 |
+| r2 | 2 | 18 |
+| r3 | 3 | 27 |
+| r4 | 4 | 36 |
+| r5 | 5 | 45 |
+| r6 | 6 | 54 |
+| r7 | 7 | 63 |
+| r8 | 8 | 72 |
+| r9 | 9 | 81 |
+| r10 | 10 | 90 |
+| r11 | 11 | 99 |
+| r12 | 12 | 108 |
+| r13 | 13 | 117 |
+| r14 | 14 | 126 |
+| r15 | 15 | 135 |
+| r16 | 16 | 144 |
+| r17 | 17 | 153 |
+| r18 | 18 | 162 |
+| r19 | 19 | 171 |
+| r20 | 20 | 180 |
+| r21 | 21 | 189 |
+: Pocket Table 9 {#tbl-p9}
+
+epsilon rho delta omicron gamma sigma beta alpha epsilon theta tau beta kappa epsilon iota rho xi delta delta gamma kappa rho tau eta nu iota theta upsilon alpha alpha sigma kappa omicron iota lambda theta pi rho theta sigma theta alpha xi kappa.
+
+| A | B | C |
+|---|---|---|
+| r1 | 1 | 10 |
+| r2 | 2 | 20 |
+| r3 | 3 | 30 |
+| r4 | 4 | 40 |
+| r5 | 5 | 50 |
+| r6 | 6 | 60 |
+| r7 | 7 | 70 |
+| r8 | 8 | 80 |
+| r9 | 9 | 90 |
+| r10 | 10 | 100 |
+| r11 | 11 | 110 |
+| r12 | 12 | 120 |
+| r13 | 13 | 130 |
+| r14 | 14 | 140 |
+| r15 | 15 | 150 |
+| r16 | 16 | 160 |
+| r17 | 17 | 170 |
+| r18 | 18 | 180 |
+| r19 | 19 | 190 |
+| r20 | 20 | 200 |
+| r21 | 21 | 210 |
+: Pocket Table 10 {#tbl-p10}
+
+alpha eta pi xi gamma iota theta xi mu theta pi beta lambda xi mu nu eta alpha kappa rho gamma eta pi eta kappa eta theta omicron theta iota kappa delta.
+
+| A | B | C |
+|---|---|---|
+| r1 | 1 | 11 |
+| r2 | 2 | 22 |
+| r3 | 3 | 33 |
+| r4 | 4 | 44 |
+| r5 | 5 | 55 |
+| r6 | 6 | 66 |
+| r7 | 7 | 77 |
+| r8 | 8 | 88 |
+| r9 | 9 | 99 |
+| r10 | 10 | 110 |
+| r11 | 11 | 121 |
+| r12 | 12 | 132 |
+| r13 | 13 | 143 |
+| r14 | 14 | 154 |
+| r15 | 15 | 165 |
+| r16 | 16 | 176 |
+| r17 | 17 | 187 |
+| r18 | 18 | 198 |
+| r19 | 19 | 209 |
+| r20 | 20 | 220 |
+| r21 | 21 | 231 |
+: Pocket Table 11 {#tbl-p11}
+
+pi upsilon zeta theta pi xi beta upsilon epsilon nu beta eta alpha upsilon epsilon xi beta beta zeta nu omicron lambda delta gamma zeta lambda eta zeta rho omicron beta kappa nu mu lambda omicron zeta delta alpha gamma iota gamma mu xi delta sigma eta nu mu kappa xi gamma beta pi eta mu sigma omicron eta lambda mu pi alpha xi theta nu beta nu beta omicron gamma beta iota eta gamma upsilon lambda mu iota lambda upsilon beta iota lambda iota kappa alpha upsilon gamma alpha theta delta pi omicron nu iota xi pi epsilon pi zeta alpha kappa epsilon.
+
+| A | B | C |
+|---|---|---|
+| r1 | 1 | 12 |
+| r2 | 2 | 24 |
+| r3 | 3 | 36 |
+| r4 | 4 | 48 |
+| r5 | 5 | 60 |
+| r6 | 6 | 72 |
+| r7 | 7 | 84 |
+| r8 | 8 | 96 |
+| r9 | 9 | 108 |
+| r10 | 10 | 120 |
+| r11 | 11 | 132 |
+| r12 | 12 | 144 |
+| r13 | 13 | 156 |
+| r14 | 14 | 168 |
+| r15 | 15 | 180 |
+| r16 | 16 | 192 |
+| r17 | 17 | 204 |
+| r18 | 18 | 216 |
+| r19 | 19 | 228 |
+| r20 | 20 | 240 |
+| r21 | 21 | 252 |
+: Pocket Table 12 {#tbl-p12}
+
+theta lambda lambda omicron mu upsilon gamma rho eta nu zeta theta xi gamma beta pi sigma sigma lambda zeta xi delta gamma iota upsilon gamma eta delta xi pi omicron zeta theta epsilon xi omicron upsilon theta sigma delta kappa kappa iota tau iota mu iota iota eta omicron theta zeta theta theta epsilon kappa tau eta lambda gamma nu iota theta rho rho theta delta omicron beta delta alpha pi theta omicron mu beta kappa theta delta beta eta upsilon tau eta gamma mu rho zeta omicron upsilon iota alpha delta upsilon upsilon mu eta beta mu lambda epsilon beta.
+
+| A | B | C |
+|---|---|---|
+| r1 | 1 | 13 |
+| r2 | 2 | 26 |
+| r3 | 3 | 39 |
+| r4 | 4 | 52 |
+| r5 | 5 | 65 |
+| r6 | 6 | 78 |
+| r7 | 7 | 91 |
+| r8 | 8 | 104 |
+| r9 | 9 | 117 |
+| r10 | 10 | 130 |
+| r11 | 11 | 143 |
+| r12 | 12 | 156 |
+| r13 | 13 | 169 |
+| r14 | 14 | 182 |
+| r15 | 15 | 195 |
+| r16 | 16 | 208 |
+| r17 | 17 | 221 |
+| r18 | 18 | 234 |
+| r19 | 19 | 247 |
+| r20 | 20 | 260 |
+| r21 | 21 | 273 |
+: Pocket Table 13 {#tbl-p13}
+
+iota beta upsilon eta alpha lambda xi mu zeta upsilon kappa gamma eta beta pi sigma pi gamma xi delta nu sigma epsilon sigma gamma zeta nu iota xi kappa kappa xi beta kappa tau mu xi xi alpha mu eta nu nu eta alpha xi zeta xi delta gamma nu.
+
+| A | B | C |
+|---|---|---|
+| r1 | 1 | 14 |
+| r2 | 2 | 28 |
+| r3 | 3 | 42 |
+| r4 | 4 | 56 |
+| r5 | 5 | 70 |
+| r6 | 6 | 84 |
+| r7 | 7 | 98 |
+| r8 | 8 | 112 |
+| r9 | 9 | 126 |
+| r10 | 10 | 140 |
+| r11 | 11 | 154 |
+| r12 | 12 | 168 |
+| r13 | 13 | 182 |
+| r14 | 14 | 196 |
+| r15 | 15 | 210 |
+| r16 | 16 | 224 |
+| r17 | 17 | 238 |
+| r18 | 18 | 252 |
+| r19 | 19 | 266 |
+| r20 | 20 | 280 |
+| r21 | 21 | 294 |
+: Pocket Table 14 {#tbl-p14}
+
+mu omicron zeta epsilon alpha beta sigma epsilon nu gamma tau upsilon mu rho zeta epsilon mu kappa zeta rho zeta gamma delta nu pi eta kappa epsilon beta pi lambda beta upsilon nu gamma upsilon zeta theta upsilon nu upsilon eta pi zeta tau eta beta nu rho zeta nu mu delta epsilon theta eta beta sigma beta lambda delta nu upsilon omicron sigma kappa xi kappa tau theta xi nu mu omicron rho omicron zeta alpha alpha upsilon pi omicron theta omicron upsilon omicron zeta pi nu delta gamma epsilon mu xi mu gamma omicron rho.
+
+| A | B | C |
+|---|---|---|
+| r1 | 1 | 15 |
+| r2 | 2 | 30 |
+| r3 | 3 | 45 |
+| r4 | 4 | 60 |
+| r5 | 5 | 75 |
+| r6 | 6 | 90 |
+| r7 | 7 | 105 |
+| r8 | 8 | 120 |
+| r9 | 9 | 135 |
+| r10 | 10 | 150 |
+| r11 | 11 | 165 |
+| r12 | 12 | 180 |
+| r13 | 13 | 195 |
+| r14 | 14 | 210 |
+| r15 | 15 | 225 |
+| r16 | 16 | 240 |
+| r17 | 17 | 255 |
+| r18 | 18 | 270 |
+| r19 | 19 | 285 |
+| r20 | 20 | 300 |
+| r21 | 21 | 315 |
+: Pocket Table 15 {#tbl-p15}
+
+beta beta epsilon gamma lambda rho gamma beta rho nu epsilon alpha gamma upsilon delta eta epsilon pi kappa zeta theta gamma mu upsilon iota zeta lambda upsilon iota omicron epsilon iota rho pi eta tau iota upsilon rho theta lambda mu beta eta zeta nu zeta iota lambda nu zeta iota delta rho beta mu omicron sigma rho tau delta iota sigma nu mu iota nu mu tau epsilon mu lambda gamma omicron theta zeta upsilon beta kappa rho iota kappa tau lambda alpha beta theta epsilon kappa upsilon.
+
+| A | B | C |
+|---|---|---|
+| r1 | 1 | 16 |
+| r2 | 2 | 32 |
+| r3 | 3 | 48 |
+| r4 | 4 | 64 |
+| r5 | 5 | 80 |
+| r6 | 6 | 96 |
+| r7 | 7 | 112 |
+| r8 | 8 | 128 |
+| r9 | 9 | 144 |
+| r10 | 10 | 160 |
+| r11 | 11 | 176 |
+| r12 | 12 | 192 |
+| r13 | 13 | 208 |
+| r14 | 14 | 224 |
+| r15 | 15 | 240 |
+| r16 | 16 | 256 |
+| r17 | 17 | 272 |
+| r18 | 18 | 288 |
+| r19 | 19 | 304 |
+| r20 | 20 | 320 |
+| r21 | 21 | 336 |
+: Pocket Table 16 {#tbl-p16}
+

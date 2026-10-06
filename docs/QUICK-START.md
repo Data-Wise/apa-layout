@@ -27,8 +27,8 @@ tests/run.sh
 ## What This Does
 
 - docx: data tables keep their APA rules; list items are double-spaced.
-- `jou` PDF: figures float `[tbp]` and keep their notes; table captions are not
-  stranded at a page foot.
+- `jou` PDF: figures and tables float `[tbp]` and figures keep their notes;
+  table captions are not stranded at a page foot.
 - Typst: `\bigl(` and `\!\left(` no longer leave gaps or collisions.
 
 ## Common Tasks
@@ -51,8 +51,8 @@ tests/run.sh
 ## Current Status
 
 ```text
-version: 0.1.1
-status:  released (https://github.com/Data-Wise/apa-layout/releases/tag/v0.1.1)
+version: 0.1.2
+status:  released (https://github.com/Data-Wise/apa-layout/releases/tag/v0.1.2)
 ```
 
 ## Need Help?

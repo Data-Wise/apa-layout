@@ -2,11 +2,13 @@
 -- \AtBeginDocument so it does not matter where Quarto places this text
 -- relative to apaquarto's own template (apalatex.tex):
 --
--- 1. jou only: floatsintext makes apaquarto set every figure [H]
---    (floatlatex.lua). In two columns an [H] figure that does not fit the rest
---    of a column jumps to the next one and leaves a blank pocket; let figures
---    float [tbp] instead. man keeps [H]. Pair with jou-float-notes.lua, which
---    keeps a figure's note inside the float that now moves.
+-- 1. jou only: floatsintext makes apaquarto set every figure and in-flow table
+--    [H] (floatlatex.lua). In two columns an [H] float that does not fit the
+--    rest of a column jumps to the next one and leaves a blank pocket; let
+--    figures and tables float [tbp] instead. man keeps [H]. Pair with
+--    jou-float-notes.lua, which keeps a figure's note inside the float that now
+--    moves. A float that asks to span both columns (apa-twocolumn) is a
+--    starred environment with its own placement and is untouched.
 --
 -- 2. All modes: an in-flow table's title and caption end in \nopagebreak, but
 --    the \addcontentsline that follows leaves a legal page break before the
@@ -32,7 +34,9 @@ local jou_floats = [[
 \makeatletter
 \AtBeginDocument{%
   \let\apalayout@figure\figure
-  \renewcommand{\figure}[1][]{\apalayout@figure[tbp]}}
+  \renewcommand{\figure}[1][]{\apalayout@figure[tbp]}%
+  \let\apalayout@table\table
+  \renewcommand{\table}[1][]{\apalayout@table[tbp]}}
 \makeatother
 ]]
 

@@ -9,7 +9,8 @@ fixes the bug it works around.
 | Path | Contents |
 |---|---|
 | `_extensions/dtofighi/apa-layout/` | the extension: `_extension.yml` + five Lua filters |
-| `tests/run.sh` | renders `tests/fixture/fixture.qmd` (docx, Typst, jou PDF), runs 8 checks |
+| `tests/run.sh` | renders `tests/fixture/fixture.qmd` (docx, Typst, jou PDF), runs 10 checks |
+| `tests/pdf-gaps.py` | counts blank pockets in a two-column PDF (used by `jou_pockets`) |
 | `tests/prove-fail.sh` | negative controls: each filter disabled, each check must fail |
 | `tests/vendor/wjschne/` | apaquarto 7.0.0 + apanote 6.0.0 (CC0), tests only |
 | `docs/` | quick start, site source |
@@ -17,7 +18,8 @@ fixes the bug it works around.
 ## Commands
 
 ```bash
-# needs quarto >= 1.9, lualatex, pdftotext, R + knitr, rmarkdown, ragg, svglite
+# needs quarto >= 1.9, lualatex, pdftotext, python3,
+# R + knitr, rmarkdown, ragg, svglite
 tests/run.sh          # about 8 s
 tests/prove-fail.sh   # about 1 min
 markdownlint-cli2 "*.md" "docs/**/*.md"
