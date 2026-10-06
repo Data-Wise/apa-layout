@@ -35,6 +35,21 @@ at `_extensions/Data-Wise/apa-layout`. To pin a release, use
 Every filter checks the output format (and `documentmode` for `jou`) itself,
 so one line enables all of them.
 
+## Upstream issues
+
+Each fix has an issue on apaquarto. When one is fixed upstream, delete the
+matching filter.
+
+| Filter | Upstream issue |
+|---|---|
+| `docx-tables.lua` | [wjschne/apaquarto#168](https://github.com/wjschne/apaquarto/issues/168) |
+| `jou-float-notes.lua` | [wjschne/apaquarto#169](https://github.com/wjschne/apaquarto/issues/169) |
+| `latex-header.lua` (`\Needspace` half) | [wjschne/apaquarto#170](https://github.com/wjschne/apaquarto/issues/170) |
+
+No issue is filed for `docx-lists.lua`, the `[tbp]` half of `latex-header.lua`,
+or `typst-math.lua`; those are upstream behaviors or texmath output, not bugs
+I could reproduce as such.
+
 ## Why an add-on, not a fork
 
 Decided 2026-10-05. Every fix here works on top of stock apaquarto, none edits
@@ -63,8 +78,9 @@ tests/prove-fail.sh   # disable each filter in turn; each check must fail
 ```
 
 `tests/run.sh` renders `tests/fixture/fixture.qmd` to docx, Typst and `jou`
-PDF in a temporary project with the apaquarto 7.0.0 vendored in
-`tests/vendor/` and this repo's filters, then checks:
+PDF, and a probe (`tests/fixture/stranded.qmd`) to `man` PDF, in a temporary
+project with the apaquarto 7.0.0 vendored in `tests/vendor/` and this repo's
+filters, then checks:
 
 | Check | Filter | Holds when |
 |---|---|---|
@@ -73,14 +89,17 @@ PDF in a temporary project with the apaquarto 7.0.0 vendored in
 | `jou_notes` | `jou-float-notes.lua` | no figure note follows `\end{figure}` in the `jou` tex |
 | `jou_floats` | `latex-header.lua` | the `jou` preamble redefines figures to float `[tbp]` |
 | `needspace` | `latex-header.lua` | the preamble puts `\Needspace` before in-flow table titles |
+| `stranded_titles` | `latex-header.lua` | no table title is left alone at a page foot in the `man` probe |
 | `typst_math` | `typst-math.lua` | the Typst output has no unconverted TeX, `\big` scale boxes or negative kerns |
 | `jou_overfull` | (sanity) | a fresh LuaLaTeX compile of the `jou` tex reports no overfull line |
 
 `jou_floats` and `needspace` confirm that the preamble code is present, not
-where LaTeX ends up placing a float or a page break. `jou_overfull` guards no
+where LaTeX ends up placing a float or a page break; `stranded_titles` is the
+behavior check for the page-break fix. `jou_overfull` guards no
 filter; `prove-fail.sh` shows it failing on a planted overlong line. Every
 check fails closed when its input is missing. Requires Quarto >= 1.9 (which
-bundles Typst), R with knitr, rmarkdown, ragg and svglite, and LuaLaTeX.
+bundles Typst), R with knitr, rmarkdown, ragg and svglite, LuaLaTeX, and
+`pdftotext` (poppler).
 
 The checks are ported from `pmed`'s layout gate (`layout-checks.sh`), where the
 fixes were first developed. A manuscript that adopts this extension can copy

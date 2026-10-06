@@ -60,7 +60,8 @@ A filter that does not apply to the current format returns immediately.
 apaquarto gives every table inside a figure or table float the borderless
 `FigureLayout` style, which is meant for a multipanel figure's layout table.
 Data tables lose their APA rules. This filter sets any such table that holds no
-image back to the reference document's `Table` style.
+image back to the reference document's `Table` style. Upstream:
+[wjschne/apaquarto#168](https://github.com/wjschne/apaquarto/issues/168).
 
 ### `docx-lists.lua` (docx)
 
@@ -75,13 +76,15 @@ Adds two preamble fixes:
 1. **`jou` figures float `[tbp]`.** `floatsintext` makes apaquarto set every
    figure `[H]`, which leaves blank pockets in two columns.
 2. **`\Needspace` before in-flow table titles.** A caption could be stranded at
-   a page foot, away from its table. Floats are untouched.
+   a page foot, away from its table. Floats are untouched. Upstream:
+[wjschne/apaquarto#170](https://github.com/wjschne/apaquarto/issues/170).
 
 ### `jou-float-notes.lua` (pdf, `jou`)
 
 A code-chunk figure's `apa-note` is written after `\end{figure}`. Once `jou`
 figures float, the note is left behind in the text column. This filter moves
-`\end{figure}` after the note.
+`\end{figure}` after the note. Upstream:
+[wjschne/apaquarto#169](https://github.com/wjschne/apaquarto/issues/169).
 
 ### `typst-math.lua` (typst)
 
@@ -93,13 +96,14 @@ both; Typst sizes matched delimiters itself.
 ## Verifying the Fixes
 
 ```bash
-tests/run.sh          # render the fixture, run 7 checks
+tests/run.sh          # render the fixture, run 8 checks
 tests/prove-fail.sh   # disable each filter in turn; each check must fail
 ```
 
 `tests/run.sh` renders a small fixture manuscript to docx, Typst and `jou` PDF
 with a vendored apaquarto 7.0.0 and this repo's filters. It needs Quarto 1.9 or
-later, LuaLaTeX, and R with knitr, rmarkdown, ragg and svglite. See the
+later, LuaLaTeX, `pdftotext`, and R with knitr, rmarkdown, ragg and
+svglite. See the
 [reference card](../reference/REFCARD-APA-LAYOUT.md) for the check-to-filter
 map. CI runs both scripts on every PR.
 

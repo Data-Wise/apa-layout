@@ -19,11 +19,12 @@ jobs:
         with:
           use-public-rspm: true
 
-      # apaquarto renders figures with ragg, which needs these system libraries.
-      - name: Install system libraries for ragg
+      # ragg (apaquarto's figure device) needs the -dev libraries; poppler-utils
+      # provides pdftotext/pdfinfo for the stranded_titles check.
+      - name: Install system libraries
         run: |
           sudo apt-get update
-          sudo apt-get install -y libfreetype6-dev libpng-dev libtiff-dev libjpeg-dev libharfbuzz-dev libfribidi-dev
+          sudo apt-get install -y libfreetype6-dev libpng-dev libtiff-dev libjpeg-dev libharfbuzz-dev libfribidi-dev poppler-utils
 
       - name: Install R packages
         run: Rscript -e 'install.packages(c("knitr", "rmarkdown", "ragg", "svglite"))'
