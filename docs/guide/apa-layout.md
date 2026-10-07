@@ -94,7 +94,7 @@ both; Typst sizes matched delimiters itself.
 ## Verifying the Fixes
 
 ```bash
-tests/run.sh          # render the fixture, run 7 checks
+tests/run.sh          # render the fixture, run 8 checks
 tests/prove-fail.sh   # disable each filter in turn; each check must fail
 ```
 
