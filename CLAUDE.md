@@ -9,7 +9,7 @@ fixes the bug it works around.
 | Path | Contents |
 |---|---|
 | `_extensions/dtofighi/apa-layout/` | the extension: `_extension.yml` + three Lua filters |
-| `tests/run.sh` | renders `tests/fixture/fixture.qmd` (docx, Typst, jou PDF), runs 7 checks |
+| `tests/run.sh` | renders `tests/fixture/fixture.qmd` (docx, Typst, jou PDF), runs 8 checks |
 | `tests/pdf-gaps.py` | counts blank pockets in a two-column PDF (used by `jou_pockets`) |
 | `tests/prove-fail.sh` | negative controls: each filter disabled, each check must fail |
 | `tests/vendor/wjschne/` | apaquarto v7.0.0 release + apanote 6.0.0 (CC0), tests only |

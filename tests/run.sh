@@ -9,6 +9,8 @@
 #   APA_LAYOUT_DISABLE  space-separated filter files to replace with a no-op
 #                       in the temporary copy (the repo is never touched)
 #   APA_LAYOUT_FIXTURE  a .qmd to render instead of tests/fixture/fixture.qmd
+#   APA_LAYOUT_HEADER   a file to copy over latex-header.lua in the temporary
+#                       copy (plants an old or broken version)
 #   KEEP=1              keep the temporary project and print its path
 #
 # Check            Guards
@@ -16,6 +18,7 @@
 #   jou_floats     latex-header.lua     jou figures float [tbp], not [H]
 #   jou_table_floats latex-header.lua   jou tables float [tbp], not [H]
 #   jou_pockets    latex-header.lua     no blank pocket in a jou column (jou probe PDF)
+#   jou_note       latex-header.lua     the correspondence note sits at the foot of page 1
 #   typst_math     typst-math.lua       no \big scale boxes or \! negative kerns
 #   man_floats     (apaquarto #171)     no figure title or note clipped at a man page foot
 #   jou_overfull   (sanity)             the jou build compiles, no overfull line
@@ -65,6 +68,12 @@ render() {
   fi
 }
 
+if [ -n "${APA_LAYOUT_HEADER:-}" ]; then
+  [ -f "$APA_LAYOUT_HEADER" ] || { echo "no such file: $APA_LAYOUT_HEADER" >&2; exit 2; }
+  cp "$APA_LAYOUT_HEADER" "$WORK/$EXT/latex-header.lua"
+  echo "latex-header.lua replaced by $APA_LAYOUT_HEADER"
+fi
+
 echo "==> Rendering docx, typst, pdf (jou), pdf (man), pdf (jou, pocket probe)…"
 render docx --to apaquarto-docx
 mv "$WORK/fixture.docx" "$DOCX"
@@ -72,7 +81,7 @@ render typst --to apaquarto-typst -M keep-typ:true
 cp "$WORK/out/render-typst.log" "$TYPLOG"
 mv "$WORK/fixture.typ" "$TYP"
 render jou --to apaquarto-pdf -M documentmode:jou -M keep-tex:true
-cp "$WORK/fixture.tex" "$TEXDIR/"
+cp "$WORK/fixture.tex" "$WORK/fixture.pdf" "$TEXDIR/"
 cp -R "$WORK/fixture_files" "$TEXDIR/"
 render man --to apaquarto-pdf -M documentmode:man
 mv "$WORK/fixture.pdf" "$MAN"
@@ -137,6 +146,28 @@ check_jou_overfull() {
     return 1
   fi
   echo "  OK: jou has no line wider than its column (fresh LuaLaTeX log)"
+}
+
+# apaquarto sets the author/correspondence note as a [b] float so it lands at
+# the foot of the first column. A float rewrite that ignores its placement
+# argument (the 0.1.x [tbp] override) puts it at the top, under the abstract.
+# The fixture has a corresponding author; its note must start in the bottom
+# quarter of page 1. Fails closed when the note is not found.
+check_jou_note() {
+  _pos=$(pdftotext -f 1 -l 1 -bbox "$TEXDIR/fixture.pdf" - 2>/dev/null | awk '
+    /<page /   { match($0, /height="[0-9.]+"/); h = substr($0, RSTART + 8, RLENGTH - 9) }
+    /Correspondence<\/word>/ && !y { match($0, /yMin="[0-9.]+"/); y = substr($0, RSTART + 6, RLENGTH - 7) }
+    END        { if (y != "" && h != "") printf "%s %s", y, h }')
+  if [ -z "$_pos" ]; then
+    echo "  FAIL jou_note: no correspondence note on page 1 of the jou PDF"
+    return 1
+  fi
+  if ! echo "$_pos" | awk '{ exit !($1 > 0.75 * $2) }'; then
+    echo "  FAIL jou_note: the correspondence note starts at y=${_pos% *} of a ${_pos#* }-pt page, not at the foot"
+    echo "       (latex-header.lua overrides the note's [b] placement?)"
+    return 1
+  fi
+  echo "  OK: jou correspondence note at the foot of page 1 (y=${_pos% *} of ${_pos#* } pt)"
 }
 
 # The jou preamble must redefine table to float [tbp], next to the figure
@@ -249,6 +280,7 @@ FAIL=0
 check_docx_lists || FAIL=1
 check_jou_floats || FAIL=1
 check_jou_table_floats || FAIL=1
+check_jou_note || FAIL=1
 check_jou_pockets || FAIL=1
 check_man_floats || FAIL=1
 check_jou_overfull || FAIL=1
