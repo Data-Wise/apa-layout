@@ -30,12 +30,19 @@ jobs:
         run: Rscript -e 'install.packages(c("knitr", "rmarkdown", "ragg", "svglite"))'
 
       # quarto looks up the latest TinyTeX release through the GitHub API; an
-      # unauthenticated call is rate-limited (403) on shared runner IPs.
+      # unauthenticated call is rate-limited (403) on shared runner IPs, and the
+      # token alone did not stop it (run 37532707075 failed with 403 on a docs-only
+      # PR). Retry with a growing pause; only a real outage fails all attempts.
       - name: Install TinyTeX (LuaLaTeX)
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          quarto install tinytex --no-prompt
+          for attempt in 1 2 3 4 5; do
+            quarto install tinytex --no-prompt && break
+            if [ "$attempt" -eq 5 ]; then echo "TinyTeX install failed after 5 attempts" >&2; exit 1; fi
+            echo "TinyTeX install failed (attempt $attempt); retrying in $((attempt * 30))s" >&2
+            sleep $((attempt * 30))
+          done
           find "$HOME"/.TinyTeX/bin -mindepth 1 -maxdepth 1 -type d | head -1 >> "$GITHUB_PATH"
 
       - name: Layout checks
