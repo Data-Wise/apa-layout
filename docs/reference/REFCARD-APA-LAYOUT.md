@@ -1,6 +1,6 @@
 # apa-layout Reference Card
 
-> One-page reference for apa-layout 0.2.0 (apaquarto v7.0.0 release, Quarto >= 1.9)
+> One-page reference for apa-layout 0.2.1 (apaquarto v7.0.0 release, Quarto >= 1.9)
 
 ## Install and Enable
 
@@ -27,6 +27,7 @@
 | `jou_floats` | `latex-header.lua` | preamble floats figures `[tbp]` |
 | `jou_table_floats` | `latex-header.lua` | preamble floats tables `[tbp]` |
 | `jou_pockets` | `latex-header.lua` | no blank gap over 25% in a jou column |
+| `jou_note` | `latex-header.lua` | correspondence note at the foot of page 1 |
 | `typst_math` | `typst-math.lua` | no raw TeX, `\big` boxes or kerns |
 | `man_floats` | (apaquarto#171) | no figure title or note clipped at a man page foot |
 | `jou_overfull` | (sanity) | no overfull line wider than 1 pt |

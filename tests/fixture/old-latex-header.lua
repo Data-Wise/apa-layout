@@ -7,11 +7,6 @@
 -- its own placement and is untouched. Wrapped in \AtBeginDocument so it does
 -- not matter where Quarto places this text relative to apaquarto's template.
 --
--- Only [H] (what floatsintext sets) and an empty placement are rewritten; any
--- other placement is kept. apaquarto sets the author/correspondence note as a
--- \begin{figure}[b] float so it lands at the foot of the first column, and
--- rewriting every placement to [tbp] floated it to the top, under the abstract.
---
 -- Retired in 0.2.0, fixed upstream in apaquarto v7.0.0 (2026-10-06): the
 -- \Needspace before in-flow table titles (apaquarto#170). Its stated cause was
 -- wrong: the stranded title came from longtable's \LT@start, which checks
@@ -23,19 +18,10 @@ if not quarto.doc.is_format("latex") then return {} end
 local jou_floats = [[
 \makeatletter
 \AtBeginDocument{%
-  \def\apalayout@H{H}%
   \let\apalayout@figure\figure
-  \renewcommand{\figure}[1][]{%
-    \def\apalayout@pl{#1}%
-    \ifx\apalayout@pl\apalayout@H \apalayout@figure[tbp]%
-    \else\ifx\apalayout@pl\@empty \apalayout@figure[tbp]%
-    \else \apalayout@figure[#1]\fi\fi}%
+  \renewcommand{\figure}[1][]{\apalayout@figure[tbp]}%
   \let\apalayout@table\table
-  \renewcommand{\table}[1][]{%
-    \def\apalayout@pl{#1}%
-    \ifx\apalayout@pl\apalayout@H \apalayout@table[tbp]%
-    \else\ifx\apalayout@pl\@empty \apalayout@table[tbp]%
-    \else \apalayout@table[#1]\fi\fi}}
+  \renewcommand{\table}[1][]{\apalayout@table[tbp]}}
 \makeatother
 ]]
 

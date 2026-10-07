@@ -24,7 +24,7 @@ filters:
 
 Quarto names the installed folder after the repo owner, so the extension lands
 at `_extensions/Data-Wise/apa-layout`. To pin a release, use
-`quarto add Data-Wise/apa-layout@v0.2.0`.
+`quarto add Data-Wise/apa-layout@v0.2.1`.
 
 ## Filters
 
@@ -101,13 +101,15 @@ filters, then checks:
 | `jou_floats` | `latex-header.lua` | the `jou` preamble redefines figures to float `[tbp]` |
 | `jou_table_floats` | `latex-header.lua` | the `jou` preamble redefines tables to float `[tbp]` |
 | `jou_pockets` | `latex-header.lua` | no column of the two-column `jou` probe has a blank gap over 25% (16 tall tables after text of varying length) |
+| `jou_note` | `latex-header.lua` | the correspondence note starts in the bottom quarter of page 1 of the `jou` PDF (a `[b]` float must keep its placement) |
 | `typst_math` | `typst-math.lua` | the Typst output has no unconverted TeX, `\big` scale boxes or negative kerns |
 | `man_floats` | (apaquarto#171) | the end of every chunk `fig-cap` and `apa-note` in the fixture reaches the `man` PDF (not clipped at a page foot) |
 | `jou_overfull` | (sanity) | a fresh LuaLaTeX compile of the `jou` tex reports no overfull line |
 
 `jou_floats` and `jou_table_floats` confirm that the preamble code is present;
-`jou_pockets` is the behavior check for where a float lands. `man_floats` guards
-upstream rather than a filter, and `jou_overfull` guards no filter;
+`jou_pockets` and `jou_note` are the behavior checks for where a float lands.
+`man_floats` guards upstream rather than a filter, and `jou_overfull` guards no
+filter;
 `prove-fail.sh` shows it failing on a planted overlong line. Every
 check fails closed when its input is missing. Requires Quarto >= 1.9 (which
 bundles Typst), R with knitr, rmarkdown, ragg and svglite, LuaLaTeX, and

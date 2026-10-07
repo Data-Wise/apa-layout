@@ -4,6 +4,19 @@ All notable changes to apa-layout are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and versions follow
 [Semantic Versioning](https://semver.org/).
 
+## [0.2.1] - 2026-10-07
+
+### Fixed
+
+- `latex-header.lua`: in `jou`, the author/correspondence note is back at the
+  foot of the first column. apaquarto sets it as a `\begin{figure}[b]` float,
+  and the `[tbp]` override rewrote every figure and table placement, so the
+  note floated to the top, directly under the abstract and keywords. Only `[H]`
+  and an empty placement are rewritten now; any other placement is kept.
+  Seen in pmed's `jou` PDF; reproduced in the fixture, and absent without the
+  filter. New check `jou_note` (8 checks); `prove-fail.sh` plants the 0.2.0
+  override and expects it to fail.
+
 ## [0.2.0] - 2026-10-06
 
 Needs the apaquarto **v7.0.0 release** (2026-10-06 11:21 UTC or later). An
@@ -133,6 +146,7 @@ Quarto >= 1.9.0.
   its filter is disabled.
 - MIT license.
 
+[0.2.1]: https://github.com/Data-Wise/apa-layout/releases/tag/v0.2.1
 [0.2.0]: https://github.com/Data-Wise/apa-layout/releases/tag/v0.2.0
 [0.1.2]: https://github.com/Data-Wise/apa-layout/releases/tag/v0.1.2
 [0.1.1]: https://github.com/Data-Wise/apa-layout/releases/tag/v0.1.1
