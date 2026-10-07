@@ -1,6 +1,6 @@
 # apa-layout Reference Card
 
-> One-page reference for apa-layout 0.2.0 (apaquarto v7.0.0 release, Quarto >= 1.9)
+> One-page reference for apa-layout 0.2.1 (apaquarto v7.0.0 release, Quarto >= 1.9)
 
 ## Install and Enable
 
