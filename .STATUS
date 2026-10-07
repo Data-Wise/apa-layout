@@ -19,7 +19,9 @@ Install: `quarto add Data-Wise/apa-layout`; filter reference `Data-Wise/apa-layo
 - Workflow (craft style): feature/* -> dev (squash) -> main (release PR, merge
   commit). main protected; dev has a deletion-only ruleset.
 - CI (`.github/workflows/test.yml`): `layout` job runs both test scripts on PRs and
-  pushes to main/dev. Not yet a required check on main.
+  pushes to main/dev. `layout` is a required check on main (not on dev, which has
+  no required checks). The TinyTeX install retries up to 5 times: it hits a GitHub
+  API 403 flake on shared runners.
 - Consumer: pmed vendors a byte-identical copy at `_extensions/dtofighi/apa-layout`.
 
 ## Not in scope
