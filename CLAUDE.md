@@ -42,6 +42,12 @@ markdownlint-cli2 "*.md" "docs/**/*.md"
   the latest release through the GitHub API: keep `GITHUB_TOKEN` on that step
   or runs fail intermittently with 403.
 - Bump `version` in `_extension.yml` and add a CHANGELOG entry per release.
+- `latex-header.lua` rewrites only `[H]` and empty float placements to `[tbp]`.
+  apaquarto sets the author note as a `\begin{figure}[b]` float; rewriting every
+  placement floats it under the abstract (check `jou_note`).
+- After a release, consumers re-copy from the tag (`git show
+  vX.Y.Z:_extensions/dtofighi/apa-layout/<file>`), never edit their vendored
+  folder, and run their own `render-both.sh` gate before the PR.
 - TeX in `\AtBeginDocument` (latex-header.lua): write `#1`, not `##1`.
 - Overfull boxes: quarto's stdout shows no LaTeX warnings; compile the kept
   `.tex` with `lualatex -draftmode` and read that log.
