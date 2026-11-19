@@ -297,12 +297,15 @@ check_man_pockets() {
 # line (Quarto's latex postprocessor drops the rest of the .tex otherwise),
 # and the longtable must stay in the flow; without it nothing changes.
 check_man_table_floats() {
-  command -v pandoc >/dev/null 2>&1 || { echo "  FAIL man_table_floats: pandoc not installed"; return 1; }
+  # Quarto bundles pandoc; CI runners have quarto but no standalone pandoc.
+  if command -v pandoc >/dev/null 2>&1; then _pd=pandoc
+  elif command -v quarto >/dev/null 2>&1; then _pd="quarto pandoc"
+  else echo "  FAIL man_table_floats: neither pandoc nor quarto installed"; return 1; fi
   _f="$WORK/$EXT/man-floats.lua"
   printf -- '---\napa-layout: {man-floats: true}\n---\n' >"$WORK/out/on.yaml"
   printf -- '---\napa-layout: {man-floats: false}\n---\n' >"$WORK/out/off.yaml"
-  _on=$(pandoc "$WORK/out/on.yaml" "$WORK/man-tables.md" --lua-filter "$_f" -t latex 2>&1) || true
-  _off=$(pandoc "$WORK/out/off.yaml" "$WORK/man-tables.md" --lua-filter "$_f" -t latex 2>&1) || true
+  _on=$($_pd "$WORK/out/on.yaml" "$WORK/man-tables.md" --lua-filter "$_f" -t latex 2>&1) || true
+  _off=$($_pd "$WORK/out/off.yaml" "$WORK/man-tables.md" --lua-filter "$_f" -t latex 2>&1) || true
   _begin=$(printf '%s\n' "$_on" | grep -c '^\\begin{table}\[!htbp\]$' || true)
   _end=$(printf '%s\n' "$_on" | grep -c '^\\end{table}$' || true)
   _flow=$(printf '%s\n' "$_on" | grep -c '^\\par\\addvspace{\\baselineskip}\\begingroup$' || true)
