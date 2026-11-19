@@ -4,6 +4,23 @@ All notable changes to apa-layout are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and versions follow
 [Semantic Versioning](https://semver.org/).
 
+## [Unreleased]
+
+### Added
+
+- Opt-in `man-floats` option (`apa-layout: {man-floats: true}`, a top-level
+  key). In `man`, `latex-header.lua` redefines figures to float `[!htbp]`
+  instead of apaquarto's `[H]`, and the new `man-floats.lua` (post-render)
+  floats a `man` table set as one box. Longtables are never floated: inside a
+  float LaTeX drops whatever does not fit the page. Off by default; `jou` is
+  unchanged. Seen in pmed's `man` PDF, where four `[H]` figures and a one-box
+  table left 40-53% of a page blank; with the option, none does and the PDF is
+  one page shorter.
+- Checks `man_pockets` (a `man` probe with six tall figures, measured by the new
+  pixel-based `tests/man-gaps.py`) and `man_table_floats` (plain-pandoc unit
+  check of `man-floats.lua`); 10 checks. `prove-fail.sh` disables each filter
+  and expects these to fail.
+
 ## [0.2.1] - 2026-10-07
 
 ### Fixed

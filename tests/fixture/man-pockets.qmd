@@ -1,0 +1,114 @@
+---
+title: "Man float probe"
+shorttitle: "MAN PROBE"
+author:
+  - name: Test Author
+    corresponding: true
+    email: test@example.com
+    affiliations:
+      - name: Example University
+abstract: >-
+  Tall figures after text of varying length in single-column man, so that
+  without apa-layout's man-floats option an [H] figure that misses the rest of
+  a page moves to the next one and leaves the rest of the page blank. Rendered
+  by tests/run.sh (man, PDF only); tests/man-gaps.py counts the blank pages.
+keywords: [probe]
+documentmode: man
+floatsintext: true
+apa-layout:
+  man-floats: true
+filters:
+  - dtofighi/apa-layout
+execute:
+  echo: false
+---
+
+lambda epsilon nu beta gamma sigma delta mu tau beta rho eta beta gamma xi xi gamma theta gamma sigma xi beta tau delta theta tau beta tau tau nu beta theta beta sigma epsilon kappa xi epsilon sigma delta tau kappa sigma zeta delta tau tau eta mu delta sigma gamma tau beta upsilon eta pi sigma xi lambda omicron tau omicron mu kappa theta zeta theta gamma tau kappa rho pi lambda omicron kappa upsilon gamma delta rho xi zeta lambda epsilon pi xi beta gamma sigma tau.
+
+lambda lambda mu upsilon pi tau omicron gamma gamma iota pi gamma beta kappa tau omicron kappa nu mu alpha omicron mu zeta upsilon delta pi beta eta kappa epsilon theta nu nu pi gamma zeta omicron nu sigma iota epsilon xi sigma iota xi mu nu theta epsilon gamma zeta epsilon theta theta alpha pi tau zeta iota kappa alpha epsilon xi sigma mu upsilon tau lambda epsilon rho upsilon beta omicron sigma nu nu nu nu delta pi nu beta eta gamma eta omicron zeta delta lambda upsilon.
+
+beta delta alpha tau epsilon sigma delta mu upsilon alpha gamma eta upsilon nu epsilon iota mu upsilon mu pi delta delta pi omicron pi pi kappa gamma epsilon delta lambda iota pi zeta rho alpha eta rho mu epsilon sigma alpha rho kappa gamma iota rho mu zeta mu theta sigma sigma rho lambda theta upsilon eta theta nu theta eta rho pi mu alpha alpha iota pi iota eta upsilon mu omicron mu mu gamma theta delta theta pi eta lambda eta pi upsilon upsilon alpha pi mu.
+
+```{r}
+#| label: fig-m1
+#| fig-cap: "Man Probe Figure 1"
+#| fig-height: 6
+plot(1:10)
+```
+
+gamma delta nu eta pi zeta xi lambda gamma nu omicron nu gamma zeta zeta epsilon alpha epsilon tau omicron epsilon upsilon upsilon pi mu epsilon sigma sigma epsilon alpha alpha delta rho epsilon xi eta eta alpha iota eta kappa rho theta tau lambda iota sigma xi epsilon beta mu omicron tau rho xi rho epsilon sigma epsilon rho rho alpha omicron zeta upsilon alpha epsilon zeta epsilon pi upsilon delta sigma beta lambda rho rho sigma pi delta sigma beta theta eta iota beta delta rho omicron sigma.
+
+alpha gamma omicron lambda upsilon rho upsilon rho eta iota omicron rho sigma pi rho theta rho iota sigma eta omicron epsilon xi delta nu omicron lambda gamma theta xi gamma eta kappa delta epsilon mu epsilon iota epsilon omicron theta delta nu pi zeta theta zeta xi rho nu lambda xi eta mu lambda gamma mu alpha lambda sigma omicron omicron alpha nu lambda rho upsilon kappa rho gamma delta theta delta gamma iota iota beta zeta iota epsilon xi iota nu epsilon sigma rho tau pi lambda gamma.
+
+iota beta zeta xi gamma iota alpha gamma iota gamma upsilon theta gamma iota delta omicron alpha lambda sigma xi iota upsilon epsilon beta rho theta delta zeta iota beta zeta eta kappa kappa rho eta kappa omicron rho zeta iota mu alpha iota beta alpha alpha rho sigma eta rho pi theta omicron delta xi pi sigma nu rho kappa eta theta lambda eta epsilon nu mu beta epsilon alpha gamma iota xi zeta beta gamma nu rho kappa upsilon theta kappa beta omicron zeta zeta iota omicron alpha.
+
+iota mu lambda sigma lambda theta beta kappa eta mu zeta alpha lambda nu gamma pi iota rho eta theta rho alpha gamma iota gamma epsilon nu tau beta nu alpha kappa kappa theta gamma tau rho epsilon upsilon nu lambda pi epsilon kappa upsilon epsilon beta rho xi rho epsilon rho rho tau alpha tau theta gamma alpha beta epsilon mu delta nu omicron sigma beta alpha sigma theta pi iota alpha omicron gamma rho sigma gamma rho gamma pi iota gamma iota theta eta theta omicron pi nu.
+
+gamma pi kappa beta upsilon eta gamma upsilon epsilon lambda iota kappa upsilon tau epsilon alpha pi beta pi iota delta eta pi kappa rho kappa omicron omicron omicron delta sigma eta kappa gamma pi alpha kappa omicron gamma rho omicron iota nu eta eta gamma tau gamma epsilon rho iota mu epsilon upsilon rho iota delta mu theta pi pi nu alpha zeta alpha pi omicron nu kappa epsilon xi mu nu lambda delta lambda alpha lambda lambda nu delta eta alpha kappa iota mu gamma nu nu tau.
+
+```{r}
+#| label: fig-m2
+#| fig-cap: "Man Probe Figure 2"
+#| fig-height: 6
+plot(1:10)
+```
+
+gamma mu xi iota beta iota delta beta kappa epsilon theta iota xi rho lambda eta mu xi alpha nu sigma sigma eta gamma beta xi omicron upsilon epsilon kappa pi beta sigma epsilon zeta pi xi lambda kappa kappa iota iota nu theta kappa pi sigma nu delta zeta zeta gamma eta rho pi sigma theta omicron lambda omicron xi epsilon sigma eta theta gamma zeta lambda sigma gamma lambda theta mu iota tau eta alpha xi nu xi rho eta nu iota lambda beta pi iota tau mu.
+
+epsilon rho rho eta gamma iota theta nu nu omicron xi kappa alpha epsilon beta xi pi tau pi alpha gamma nu rho omicron omicron theta delta theta epsilon epsilon rho delta omicron gamma sigma beta alpha epsilon theta tau beta kappa epsilon iota rho xi delta delta gamma kappa rho tau eta nu iota theta upsilon alpha alpha sigma kappa omicron iota lambda theta pi rho theta sigma theta alpha xi kappa beta alpha eta pi xi gamma iota theta xi mu theta pi beta lambda xi mu nu.
+
+```{r}
+#| label: fig-m3
+#| fig-cap: "Man Probe Figure 3"
+#| fig-height: 6
+plot(1:10)
+```
+
+eta alpha kappa rho gamma eta pi eta kappa eta theta omicron theta iota kappa delta upsilon pi upsilon zeta theta pi xi beta upsilon epsilon nu beta eta alpha upsilon epsilon xi beta beta zeta nu omicron lambda delta gamma zeta lambda eta zeta rho omicron beta kappa nu mu lambda omicron zeta delta alpha gamma iota gamma mu xi delta sigma eta nu mu kappa xi gamma beta pi eta mu sigma omicron eta lambda mu pi alpha xi theta nu beta nu beta omicron gamma beta iota.
+
+eta gamma upsilon lambda mu iota lambda upsilon beta iota lambda iota kappa alpha upsilon gamma alpha theta delta pi omicron nu iota xi pi epsilon pi zeta alpha kappa epsilon upsilon theta lambda lambda omicron mu upsilon gamma rho eta nu zeta theta xi gamma beta pi sigma sigma lambda zeta xi delta gamma iota upsilon gamma eta delta xi pi omicron zeta theta epsilon xi omicron upsilon theta sigma delta kappa kappa iota tau iota mu iota iota eta omicron theta zeta theta theta epsilon kappa tau eta.
+
+lambda gamma nu iota theta rho rho theta delta omicron beta delta alpha pi theta omicron mu beta kappa theta delta beta eta upsilon tau eta gamma mu rho zeta omicron upsilon iota alpha delta upsilon upsilon mu eta beta mu lambda epsilon beta eta iota beta upsilon eta alpha lambda xi mu zeta upsilon kappa gamma eta beta pi sigma pi gamma xi delta nu sigma epsilon sigma gamma zeta nu iota xi kappa kappa xi beta kappa tau mu xi xi alpha mu eta nu nu eta alpha.
+
+xi zeta xi delta gamma nu tau mu omicron zeta epsilon alpha beta sigma epsilon nu gamma tau upsilon mu rho zeta epsilon mu kappa zeta rho zeta gamma delta nu pi eta kappa epsilon beta pi lambda beta upsilon nu gamma upsilon zeta theta upsilon nu upsilon eta pi zeta tau eta beta nu rho zeta nu mu delta epsilon theta eta beta sigma beta lambda delta nu upsilon omicron sigma kappa xi kappa tau theta xi nu mu omicron rho omicron zeta alpha alpha upsilon pi omicron theta.
+
+omicron upsilon omicron zeta pi nu delta gamma epsilon mu xi mu gamma omicron rho rho beta beta epsilon gamma lambda rho gamma beta rho nu epsilon alpha gamma upsilon delta eta epsilon pi kappa zeta theta gamma mu upsilon iota zeta lambda upsilon iota omicron epsilon iota rho pi eta tau iota upsilon rho theta lambda mu beta eta zeta nu zeta iota lambda nu zeta iota delta rho beta mu omicron sigma rho tau delta iota sigma nu mu iota nu mu tau epsilon mu lambda gamma omicron.
+
+theta zeta upsilon beta kappa rho iota kappa tau lambda alpha beta theta epsilon kappa upsilon xi xi rho mu beta epsilon pi theta upsilon beta alpha beta alpha tau mu kappa delta rho mu sigma theta xi tau kappa tau epsilon eta mu upsilon pi zeta epsilon alpha theta epsilon omicron delta gamma epsilon iota nu iota alpha beta sigma mu upsilon tau omicron upsilon rho pi theta zeta alpha beta beta sigma alpha nu zeta theta zeta beta delta alpha upsilon sigma eta epsilon xi eta rho upsilon.
+
+```{r}
+#| label: fig-m4
+#| fig-cap: "Man Probe Figure 4"
+#| fig-height: 6
+plot(1:10)
+```
+
+rho xi upsilon zeta rho kappa gamma kappa beta pi sigma alpha nu xi omicron gamma omicron zeta theta delta iota theta beta delta lambda iota beta iota sigma xi rho iota kappa eta gamma rho alpha zeta iota theta eta zeta lambda eta nu lambda upsilon theta nu sigma pi pi rho alpha alpha xi theta tau kappa eta nu upsilon tau gamma tau zeta epsilon beta alpha delta delta upsilon zeta mu epsilon alpha alpha beta epsilon beta gamma beta gamma tau mu eta sigma gamma nu delta.
+
+theta eta eta delta beta beta gamma kappa pi delta epsilon delta eta kappa lambda lambda xi iota alpha mu iota kappa beta mu lambda upsilon rho pi kappa upsilon alpha xi alpha xi rho delta mu pi beta sigma tau eta gamma tau kappa zeta xi alpha rho eta kappa beta alpha mu pi delta pi zeta pi tau mu rho iota tau zeta kappa eta theta pi zeta delta gamma pi sigma delta lambda mu delta nu nu gamma xi alpha mu eta kappa iota xi sigma rho.
+
+zeta nu theta omicron epsilon sigma upsilon upsilon beta mu tau lambda rho epsilon omicron sigma lambda zeta omicron omicron iota tau theta epsilon lambda omicron theta rho eta iota kappa upsilon epsilon epsilon theta lambda upsilon rho mu zeta theta lambda eta iota delta zeta delta eta nu epsilon epsilon kappa kappa xi iota eta delta delta iota eta nu omicron beta alpha nu xi theta rho kappa omicron alpha epsilon iota upsilon nu alpha theta xi tau tau xi theta tau theta zeta delta omicron xi lambda iota.
+
+delta xi theta nu zeta iota xi pi omicron alpha upsilon xi rho zeta lambda alpha nu pi delta beta iota sigma eta zeta eta rho mu delta tau omicron sigma eta pi rho alpha mu rho lambda xi omicron eta zeta nu rho delta upsilon mu beta iota iota nu nu beta alpha gamma xi xi mu tau iota delta theta kappa nu rho theta nu omicron eta zeta epsilon gamma eta pi sigma theta epsilon mu xi omicron kappa sigma epsilon pi mu theta iota nu iota xi.
+
+```{r}
+#| label: fig-m5
+#| fig-cap: "Man Probe Figure 5"
+#| fig-height: 6
+plot(1:10)
+```
+
+zeta pi alpha iota mu theta kappa lambda pi pi xi upsilon gamma mu epsilon kappa nu beta gamma tau lambda epsilon rho mu tau alpha alpha eta gamma kappa iota upsilon delta tau epsilon theta zeta omicron mu epsilon eta nu sigma zeta upsilon upsilon gamma sigma kappa eta pi eta rho gamma omicron delta sigma delta iota xi theta epsilon pi pi sigma beta pi omicron epsilon pi theta pi zeta sigma upsilon alpha zeta lambda omicron tau pi kappa omicron mu xi xi gamma zeta mu alpha.
+
+```{r}
+#| label: fig-m6
+#| fig-cap: "Man Probe Figure 6"
+#| fig-height: 6
+plot(1:10)
+```
+
+alpha upsilon beta lambda delta rho pi pi epsilon beta eta xi epsilon lambda delta mu lambda pi rho sigma eta kappa xi lambda xi iota sigma beta kappa kappa mu pi nu lambda rho iota rho mu eta pi delta lambda eta lambda kappa epsilon tau gamma beta nu sigma nu sigma tau beta nu kappa delta alpha beta eta pi upsilon beta rho sigma upsilon nu upsilon epsilon upsilon gamma eta beta omicron zeta delta zeta beta xi delta alpha mu epsilon kappa sigma iota kappa zeta xi.
+
+beta lambda alpha xi tau tau beta pi tau rho beta delta xi tau nu omicron gamma alpha nu upsilon tau epsilon pi xi sigma delta gamma pi eta epsilon alpha xi alpha alpha delta gamma eta delta epsilon pi alpha iota tau theta omicron zeta beta mu epsilon gamma kappa sigma pi omicron iota beta beta alpha beta alpha upsilon gamma nu kappa kappa upsilon zeta pi upsilon beta lambda mu tau omicron pi zeta epsilon delta mu zeta xi pi nu omicron iota tau lambda kappa iota beta.
+
+upsilon upsilon lambda upsilon alpha epsilon upsilon kappa tau xi theta nu nu nu upsilon theta omicron kappa alpha lambda iota iota xi zeta tau beta kappa epsilon tau epsilon iota sigma pi mu sigma gamma sigma sigma pi nu eta theta kappa upsilon beta nu omicron eta iota tau alpha nu omicron sigma gamma sigma mu gamma theta nu tau rho iota rho lambda pi rho tau eta eta eta eta gamma zeta kappa mu tau tau mu nu rho epsilon theta beta pi mu delta mu omicron gamma.

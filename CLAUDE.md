@@ -49,6 +49,13 @@ markdownlint-cli2 "*.md" "docs/**/*.md"
   vX.Y.Z:_extensions/dtofighi/apa-layout/<file>`), never edit their vendored
   folder, and run their own `render-both.sh` gate before the PR.
 - TeX in `\AtBeginDocument` (latex-header.lua): write `#1`, not `##1`.
+- `man-floats` is opt-in (`apa-layout: {man-floats: true}`, a nested map;
+  `pandoc -M apa-layout.man-floats=true` sets a literal dotted key and does not
+  nest). `man-floats.lua` floats only one-box tables, never a longtable (a
+  float truncates it silently). A raw `\begin{table}`/`\end{table}` must each
+  start a line: Quarto's latex postprocessor pairs them line by line and drops
+  the rest of the `.tex` when it cannot find the `\end{table}`, with no Lua
+  error.
 - Overfull boxes: quarto's stdout shows no LaTeX warnings; compile the kept
   `.tex` with `lualatex -draftmode` and read that log.
 - Word is the only trustworthy docx viewer; macOS Quick Look ignores table
