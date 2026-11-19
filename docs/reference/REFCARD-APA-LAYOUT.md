@@ -1,6 +1,6 @@
 # apa-layout Reference Card
 
-> One-page reference for apa-layout 0.2.1 (apaquarto v7.0.0 release, Quarto >= 1.9)
+> One-page reference for apa-layout 0.3.0 (apaquarto v7.0.0 release, Quarto >= 1.9)
 
 ## Install and Enable
 
@@ -9,6 +9,7 @@
 | Install | `quarto add Data-Wise/apa-layout` |
 | Enable | top-level front matter: `filters: [Data-Wise/apa-layout]` |
 | Hand-copied folder | `filters: [dtofighi/apa-layout]` |
+| Float man figures | top-level `apa-layout: {man-floats: true}` |
 | Remove a fix | delete its `.lua` and its line in `_extension.yml` |
 
 ## Filters
@@ -16,7 +17,8 @@
 | Filter | Format | Fixes |
 |---|---|---|
 | `docx-lists.lua` | docx | list items double-spaced, not `Compact` |
-| `latex-header.lua` | pdf `jou` | figures and tables float `[tbp]` |
+| `latex-header.lua` | pdf `jou`; `man` opt-in | figures and tables float `[tbp]`; man figures `[!htbp]` under `man-floats` |
+| `man-floats.lua` | pdf `man` opt-in | one-box man tables float `[!htbp]`; longtables stay |
 | `typst-math.lua` | typst | no `\big` gap, no `\!` collision |
 
 ## Checks (`tests/run.sh`)
@@ -30,6 +32,8 @@
 | `jou_note` | `latex-header.lua` | correspondence note at the foot of page 1 |
 | `typst_math` | `typst-math.lua` | no raw TeX, `\big` boxes or kerns |
 | `man_floats` | (apaquarto#171) | no figure title or note clipped at a man page foot |
+| `man_pockets` | `latex-header.lua` | no blank run over 25% on a man probe page (`man-floats`) |
+| `man_table_floats` | `man-floats.lua` | boxed table floats, longtable stays (pandoc unit) |
 | `jou_overfull` | (sanity) | no overfull line wider than 1 pt |
 
 ## Retired in 0.2.0 (fixed in apaquarto v7.0.0)

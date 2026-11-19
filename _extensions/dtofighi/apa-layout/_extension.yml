@@ -1,6 +1,6 @@
 title: apa-layout
 author: Davood Tofighi
-version: 0.2.1
+version: 0.3.0
 quarto-required: ">=1.9.0"
 contributes:
   filters:
@@ -9,3 +9,7 @@ contributes:
     - path: latex-header.lua
     - path: typst-math.lua
     - path: docx-lists.lua
+    # After apaquarto's floatlatex.lua (post-quarto) has written man tables
+    # as raw LaTeX; a no-op unless apa-layout: {man-floats: true}.
+    - path: man-floats.lua
+      at: post-render

@@ -44,9 +44,11 @@ flowchart TD
     B --> C{output format}
     C -->|docx| D[docx-lists.lua]
     C -->|pdf, jou| E[latex-header.lua]
+    C -->|pdf, man + man-floats| F[latex-header.lua, man-floats.lua]
     C -->|typst| G[typst-math.lua]
     D --> H[fixed output]
     E --> H
+    F --> H
     G --> H
 ```
 
@@ -67,7 +69,26 @@ items are double-spaced, as APA asks. PDF builds are unaffected.
 every figure and in-flow table `[H]`. In two columns a tall `[H]` float that
 misses the rest of a column jumps to the next one, and because jou columns are
 flush-bottom the blank space is spread inside the column. Tables that ask to
-span both columns (`apa-twocolumn`) are untouched, and so is `man`.
+span both columns (`apa-twocolumn`) are untouched. `man` is untouched unless the
+manuscript opts in (next section).
+
+### `man-floats` (pdf, `man`, opt-in)
+
+In `man`, apaquarto also sets figures `[H]`, so a figure taller than the rest of
+a page moves to the next page and leaves the rest of this one blank. A top-level
+key turns floating on:
+
+```yaml
+apa-layout:
+  man-floats: true
+```
+
+`latex-header.lua` then floats `man` figures `[!htbp]`, and `man-floats.lua`
+floats any `man` table that is set as one box. Longtables stay in the text
+flow, because LaTeX drops whatever part of a floated longtable does not fit the
+page. Stock apaquarto sets no `man` table as one box, so the table half matters
+only to a manuscript that patches its tables that way. Check where figures land
+in the PDF: one can move to the page after its first mention.
 
 ### Retired filters
 
@@ -94,7 +115,7 @@ both; Typst sizes matched delimiters itself.
 ## Verifying the Fixes
 
 ```bash
-tests/run.sh          # render the fixture, run 8 checks
+tests/run.sh          # render the fixture, run 10 checks
 tests/prove-fail.sh   # disable each filter in turn; each check must fail
 ```
 

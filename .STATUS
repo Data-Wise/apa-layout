@@ -2,23 +2,27 @@ project: apa-layout
 status: active
 priority: P2
 progress: 100
-version: 0.2.1
-updated: 2026-10-07
+version: 0.3.0
+updated: 2026-11-19
 next: adopt in me-exposure-recall, me-mediator-bounds, collider (per-repo request; each needs the apaquarto 7.0.0 migration first)
 
-## Release: v0.2.1 (2026-10-07; v0.2.0 on 2026-10-06; v0.1.0-v0.1.2 on 2026-10-05; 0.1.1 was docs/CI only)
+## Release: v0.3.0 (2026-11-19; v0.2.1 on 2026-10-07; v0.2.0 on 2026-10-06; v0.1.0-v0.1.2 on 2026-10-05; 0.1.1 was docs/CI only)
 
 Published 2026-10-05 at https://github.com/Data-Wise/apa-layout (public, MIT).
 Install: `quarto add Data-Wise/apa-layout`; filter reference `Data-Wise/apa-layout`
 (Quarto names the folder after the repo owner, not the in-repo `dtofighi/`).
 
 - 0.2.0 retires docx-tables, jou-float-notes and the \Needspace fix (apaquarto
-  v7.0.0 fixed #168/#169/#170; issues apa-layout#15-#17). Three filters remain:
+  v7.0.0 fixed #168/#169/#170; issues apa-layout#15-#17). Three filters remained:
   docx-lists, jou [tbp] floats, Typst \big/\! math.
 - 0.2.1 fixes the jou correspondence note, which the [tbp] float override had
   pushed from the foot of page 1 to under the abstract: only [H] and empty
-  placements are rewritten now (check `jou_note`, 8 checks). Seen in pmed.
-- `tests/run.sh` (8 checks) and `tests/prove-fail.sh` (negative controls).
+  placements are rewritten now (check `jou_note`). Seen in pmed.
+- 0.3.0 adds the opt-in `man-floats` option (`apa-layout: {man-floats: true}`):
+  man figures float [!htbp] and man-floats.lua floats one-box man tables;
+  longtables stay in the flow. Seen in pmed (4 half-empty man pages).
+  Checks man_pockets and man_table_floats (10 checks).
+- `tests/run.sh` (10 checks) and `tests/prove-fail.sh` (negative controls).
 - Workflow (craft style): feature/* -> dev (squash) -> main (release PR, merge
   commit). main protected; dev has a deletion-only ruleset.
 - CI (`.github/workflows/test.yml`): `layout` job runs both test scripts on PRs and
