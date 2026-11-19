@@ -13,11 +13,11 @@ Install: `quarto add Data-Wise/apa-layout`; filter reference `Data-Wise/apa-layo
 (Quarto names the folder after the repo owner, not the in-repo `dtofighi/`).
 
 - 0.2.0 retires docx-tables, jou-float-notes and the \Needspace fix (apaquarto
-  v7.0.0 fixed #168/#169/#170; issues apa-layout#15-#17). Three filters remain:
+  v7.0.0 fixed #168/#169/#170; issues apa-layout#15-#17). Three filters remained:
   docx-lists, jou [tbp] floats, Typst \big/\! math.
 - 0.2.1 fixes the jou correspondence note, which the [tbp] float override had
   pushed from the foot of page 1 to under the abstract: only [H] and empty
-  placements are rewritten now (check `jou_note`, 8 checks). Seen in pmed.
+  placements are rewritten now (check `jou_note`). Seen in pmed.
 - 0.3.0 adds the opt-in `man-floats` option (`apa-layout: {man-floats: true}`):
   man figures float [!htbp] and man-floats.lua floats one-box man tables;
   longtables stay in the flow. Seen in pmed (4 half-empty man pages).
