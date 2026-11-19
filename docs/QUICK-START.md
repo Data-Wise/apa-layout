@@ -44,15 +44,15 @@ tests/run.sh
 
 | Location | Contents |
 |---|---|
-| `_extensions/dtofighi/apa-layout/` | the extension (three Lua filters) |
+| `_extensions/dtofighi/apa-layout/` | the extension (four Lua filters) |
 | `tests/` | fixture, `run.sh`, `prove-fail.sh`, vendored apaquarto |
 | `CHANGELOG.md` | release notes |
 
 ## Current Status
 
 ```text
-version: 0.2.1
-status:  released (https://github.com/Data-Wise/apa-layout/releases/tag/v0.2.1)
+version: 0.3.0
+status:  released (https://github.com/Data-Wise/apa-layout/releases/tag/v0.3.0)
 ```
 
 ## Need Help?
