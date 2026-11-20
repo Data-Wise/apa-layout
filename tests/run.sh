@@ -21,6 +21,8 @@
 #   jou_note       latex-header.lua     the correspondence note sits at the foot of page 1
 #   typst_math     typst-math.lua       no \big scale boxes or \! negative kerns
 #   man_floats     (apaquarto #171)     no figure title or note clipped at a man page foot
+#   man_pockets    latex-header.lua     man-floats: no blank page remainder (man probe PDF)
+#   man_table_floats man-floats.lua     man-floats: a boxed man table floats, a longtable does not
 #   jou_overfull   (sanity)             the jou build compiles, no overfull line
 #
 # Ported from pmed's layout-checks.sh. Each check fails closed when its input
@@ -41,6 +43,8 @@ trap cleanup EXIT
 mkdir -p "$WORK/_extensions/dtofighi"
 cp "$FIXTURE" "$WORK/fixture.qmd"
 cp "$HERE/fixture/pockets.qmd" "$WORK/pockets.qmd"
+cp "$HERE/fixture/man-pockets.qmd" "$WORK/man-pockets.qmd"
+cp "$HERE/fixture/man-tables.md" "$WORK/man-tables.md"
 cp -R "$HERE/vendor/wjschne" "$WORK/_extensions/"
 cp -R "$ROOT/$EXT" "$WORK/$EXT"
 for _f in ${APA_LAYOUT_DISABLE:-}; do
@@ -57,6 +61,7 @@ TEXDIR="$WORK/out/jou"
 POCKETS="$WORK/out/pockets.pdf"
 MAN="$WORK/out/fixture-man.pdf"
 POCKETS_TEX="$WORK/out/pockets.tex"
+MAN_POCKETS="$WORK/out/man-pockets.pdf"
 mkdir -p "$WORK/out" "$TEXDIR"
 
 render() {
@@ -74,7 +79,7 @@ if [ -n "${APA_LAYOUT_HEADER:-}" ]; then
   echo "latex-header.lua replaced by $APA_LAYOUT_HEADER"
 fi
 
-echo "==> Rendering docx, typst, pdf (jou), pdf (man), pdf (jou, pocket probe)…"
+echo "==> Rendering docx, typst, pdf (jou), pdf (man), pdf (jou and man probes)…"
 render docx --to apaquarto-docx
 mv "$WORK/fixture.docx" "$DOCX"
 render typst --to apaquarto-typst -M keep-typ:true
@@ -90,6 +95,10 @@ mv "$WORK/fixture.pdf" "$MAN"
   || { cat "$WORK/out/render-pockets.log"; echo "FAIL render: pockets.qmd" >&2; exit 1; }
 mv "$WORK/pockets.pdf" "$POCKETS"
 mv "$WORK/pockets.tex" "$POCKETS_TEX"
+( cd "$WORK" && quarto render man-pockets.qmd --to apaquarto-pdf ) \
+  >"$WORK/out/render-man-pockets.log" 2>&1 \
+  || { cat "$WORK/out/render-man-pockets.log"; echo "FAIL render: man-pockets.qmd" >&2; exit 1; }
+mv "$WORK/man-pockets.pdf" "$MAN_POCKETS"
 
 # --- docx --------------------------------------------------------------------
 
@@ -255,6 +264,60 @@ EOF
   echo "  OK: man figure titles and notes complete ($_n of $_n endings found)"
 }
 
+# The man probe (documentmode man, apa-layout: {man-floats: true}) has six tall
+# figures after text of varying length. With figures [H], one that misses the
+# rest of a page moves to the next and leaves the rest of the page blank;
+# tests/man-gaps.py counts such pages from pixels, so figures count as content.
+# Fails closed unless the probe has every figure, and python3 and pdftoppm exist.
+check_man_pockets() {
+  command -v python3 >/dev/null 2>&1 || { echo "  FAIL man_pockets: python3 not installed"; return 1; }
+  command -v pdftoppm >/dev/null 2>&1 || { echo "  FAIL man_pockets: pdftoppm not installed"; return 1; }
+  _want=$(grep -c '#| label: fig-m' "$WORK/man-pockets.qmd" || true)
+  _have=$(pdftotext "$MAN_POCKETS" - 2>/dev/null | grep -c 'Man Probe Figure' || true)
+  _res=$(python3 "$HERE/man-gaps.py" "$MAN_POCKETS")
+  _gaps=${_res#gaps=}; _gaps=${_gaps%% *}
+  if [ "${_want:-0}" -eq 0 ] || [ "${_have:-0}" -lt "$_want" ] || [ "${_gaps:--1}" -lt 0 ]; then
+    echo "  FAIL man_pockets: probe incomplete ($_have of $_want figures; $_res)"
+    return 1
+  fi
+  if [ "$_gaps" -gt 0 ]; then
+    echo "  FAIL man_pockets: $_res"
+    echo "       (latex-header.lua no longer floats man figures under man-floats?)"
+    return 1
+  fi
+  echo "  OK: no blank page remainder in man with man-floats ($_res)"
+}
+
+# man-floats.lua on a synthetic body (tests/fixture/man-tables.md): the raw
+# blocks floatlatex.lua writes for a man table that is one box (a minipage
+# with \apalongtableastabular) and for a longtable. apaquarto upstream sets
+# no man table as one box, so a render cannot exercise this; plain pandoc
+# runs the filter (it skips its format check outside Quarto). With the option
+# the boxed table must become a table[!htbp] float, \end{table} starting a
+# line (Quarto's latex postprocessor drops the rest of the .tex otherwise),
+# and the longtable must stay in the flow; without it nothing changes.
+check_man_table_floats() {
+  # Quarto bundles pandoc; CI runners have quarto but no standalone pandoc.
+  if command -v pandoc >/dev/null 2>&1; then _pd=pandoc
+  elif command -v quarto >/dev/null 2>&1; then _pd="quarto pandoc"
+  else echo "  FAIL man_table_floats: neither pandoc nor quarto installed"; return 1; fi
+  _f="$WORK/$EXT/man-floats.lua"
+  printf -- '---\napa-layout: {man-floats: true}\n---\n' >"$WORK/out/on.yaml"
+  printf -- '---\napa-layout: {man-floats: false}\n---\n' >"$WORK/out/off.yaml"
+  _on=$($_pd "$WORK/out/on.yaml" "$WORK/man-tables.md" --lua-filter "$_f" -t latex 2>&1) || true
+  _off=$($_pd "$WORK/out/off.yaml" "$WORK/man-tables.md" --lua-filter "$_f" -t latex 2>&1) || true
+  _begin=$(printf '%s\n' "$_on" | grep -c '^\\begin{table}\[!htbp\]$' || true)
+  _end=$(printf '%s\n' "$_on" | grep -c '^\\end{table}$' || true)
+  _flow=$(printf '%s\n' "$_on" | grep -c '^\\par\\addvspace{\\baselineskip}\\begingroup$' || true)
+  _offn=$(printf '%s\n' "$_off" | grep -c 'begin{table}' || true)
+  if [ "$_begin" -ne 1 ] || [ "$_end" -ne 1 ] || [ "$_flow" -ne 1 ] || [ "$_offn" -ne 0 ]; then
+    echo "  FAIL man_table_floats: on: $_begin table floats, $_end \\end{table} lines, $_flow in-flow tables (want 1, 1, 1); off: $_offn floats (want 0)"
+    echo "       (man-floats.lua no longer floats a boxed man table, or floats a longtable?)"
+    return 1
+  fi
+  echo "  OK: man-floats floats the boxed man table and leaves the longtable in the flow"
+}
+
 # --- typst -------------------------------------------------------------------
 
 check_typst_math() {
@@ -283,6 +346,8 @@ check_jou_table_floats || FAIL=1
 check_jou_note || FAIL=1
 check_jou_pockets || FAIL=1
 check_man_floats || FAIL=1
+check_man_pockets || FAIL=1
+check_man_table_floats || FAIL=1
 check_jou_overfull || FAIL=1
 check_typst_math || FAIL=1
 

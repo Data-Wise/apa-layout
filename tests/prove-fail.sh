@@ -9,7 +9,7 @@
 set -u
 
 HERE=$(cd "$(dirname "$0")" && pwd)
-ALL="docx_lists jou_floats jou_table_floats jou_pockets jou_note man_floats jou_overfull typst_math"
+ALL="docx_lists jou_floats jou_table_floats jou_pockets jou_note man_floats man_pockets man_table_floats jou_overfull typst_math"
 BAD=0
 
 # $1 = VAR=value for run.sh, $2 = label, $3 = checks expected to fail. The
@@ -35,11 +35,12 @@ expect() {
 
 echo "==> Disabling each filter in turn…"
 expect APA_LAYOUT_DISABLE=docx-lists.lua      docx-lists.lua      docx_lists
-expect APA_LAYOUT_DISABLE=latex-header.lua    latex-header.lua    "jou_floats jou_table_floats jou_pockets"
+expect APA_LAYOUT_DISABLE=latex-header.lua    latex-header.lua    "jou_floats jou_table_floats jou_pockets man_pockets"
+expect APA_LAYOUT_DISABLE=man-floats.lua      man-floats.lua      man_table_floats
 expect APA_LAYOUT_DISABLE=typst-math.lua      typst-math.lua      typst_math
 
 echo "==> Restoring the 0.2.0 float override that ignored [b] (note floats to the top)…"
-expect APA_LAYOUT_HEADER="$HERE/fixture/old-latex-header.lua" "0.2.0 latex-header.lua" jou_note
+expect APA_LAYOUT_HEADER="$HERE/fixture/old-latex-header.lua" "0.2.0 latex-header.lua" "jou_note man_pockets"
 
 echo "==> Planting a line wider than a jou column…"
 PLANTED=$(mktemp)

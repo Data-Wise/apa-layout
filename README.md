@@ -24,18 +24,44 @@ filters:
 
 Quarto names the installed folder after the repo owner, so the extension lands
 at `_extensions/Data-Wise/apa-layout`. To pin a release, use
-`quarto add Data-Wise/apa-layout@v0.2.1`.
+`quarto add Data-Wise/apa-layout@v0.3.0`.
 
 ## Filters
 
 | Filter | Format | Fixes |
 |---|---|---|
 | `docx-lists.lua` | docx | Tight lists use Word's single-spaced `Compact` style; list items become double-spaced like the body. |
-| `latex-header.lua` | pdf, `jou` | `floatsintext` sets every figure and in-flow table `[H]`, which leaves blank pockets in two columns; figures and tables float `[tbp]`. `man` is untouched. |
+| `latex-header.lua` | pdf, `jou`; `man` on request | `floatsintext` sets every figure and in-flow table `[H]`, which leaves blank pockets in two columns; figures and tables float `[tbp]`. In `man`, figures float `[!htbp]` only under `man-floats` (below). |
+| `man-floats.lua` | pdf, `man` on request | Under `man-floats`, a `man` table set as one box (it cannot break over pages) floats `[!htbp]`. Longtables stay in the text flow. |
 | `typst-math.lua` | typst | texmath writes `\bigl(`… as a `#scale()` box that keeps its unscaled width (gap inside the delimiter) and `\!\left(` as a negative kern that makes `\Phi` collide with the parenthesis. Both are dropped; Typst sizes matched delimiters itself. |
 
 Every filter checks the output format (and `documentmode` for `jou`) itself,
 so one line enables all of them.
+
+### `man-floats` (opt-in)
+
+In `man`, apaquarto sets figures `[H]`: a figure taller than the rest of the
+page moves to the next page and leaves the rest of this one blank. A table that
+is set as one box does the same. To let such figures and tables float, so text
+fills the page, add a top-level key beside `filters:`:
+
+```yaml
+apa-layout:
+  man-floats: true
+```
+
+Figures float `[!htbp]` (here if it fits, otherwise the top of a later page),
+so most stay near their first mention. Only a table that is already one box is
+floated: a longtable inside a float is set as one box too, and LaTeX drops
+whatever does not fit the page without a warning. apaquarto upstream sets no
+`man` table as one box, so `man-floats.lua` acts only on a manuscript that
+patches its tables that way (for example, to keep a short table off a page
+break); with stock apaquarto only the figure half applies. The option is off by
+default, and it has no effect in `jou`, which always floats.
+
+Check the result in the PDF: a figure can land on the page after its first
+mention, which APA allows, but a journal's production staff may still ask for
+`[H]` placement.
 
 ## Retired filters
 
@@ -91,7 +117,8 @@ tests/prove-fail.sh   # disable each filter in turn; each check must fail
 ```
 
 `tests/run.sh` renders `tests/fixture/fixture.qmd` to docx, Typst and `jou`
-PDF, and a probe (`tests/fixture/pockets.qmd`) to `jou` PDF, in a temporary
+PDF, two probes (`tests/fixture/pockets.qmd`, `tests/fixture/man-pockets.qmd`)
+to `jou` and `man` PDF, in a temporary
 project with the apaquarto v7.0.0 release vendored in `tests/vendor/` and this repo's
 filters, then checks:
 
@@ -104,10 +131,13 @@ filters, then checks:
 | `jou_note` | `latex-header.lua` | the correspondence note starts in the bottom quarter of page 1 of the `jou` PDF (a `[b]` float must keep its placement) |
 | `typst_math` | `typst-math.lua` | the Typst output has no unconverted TeX, `\big` scale boxes or negative kerns |
 | `man_floats` | (apaquarto#171) | the end of every chunk `fig-cap` and `apa-note` in the fixture reaches the `man` PDF (not clipped at a page foot) |
+| `man_pockets` | `latex-header.lua` | under `man-floats`, no page of the `man` probe has a blank run over 25% of the text block (six tall figures after text of varying length; measured from pixels by `tests/man-gaps.py`, so figures count as content) |
+| `man_table_floats` | `man-floats.lua` | on a synthetic body (`tests/fixture/man-tables.md`), plain pandoc running the filter floats the one-box table, with `\begin{table}` and `\end{table}` on lines of their own, and leaves the longtable in the flow; with the option off nothing changes |
 | `jou_overfull` | (sanity) | a fresh LuaLaTeX compile of the `jou` tex reports no overfull line |
 
 `jou_floats` and `jou_table_floats` confirm that the preamble code is present;
-`jou_pockets` and `jou_note` are the behavior checks for where a float lands.
+`jou_pockets`, `jou_note` and `man_pockets` are the behavior checks for where a
+float lands.
 `man_floats` guards upstream rather than a filter, and `jou_overfull` guards no
 filter;
 `prove-fail.sh` shows it failing on a planted overlong line. Every

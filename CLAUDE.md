@@ -8,9 +8,10 @@ fixes the bug it works around.
 
 | Path | Contents |
 |---|---|
-| `_extensions/dtofighi/apa-layout/` | the extension: `_extension.yml` + three Lua filters |
-| `tests/run.sh` | renders `tests/fixture/fixture.qmd` (docx, Typst, jou PDF), runs 8 checks |
+| `_extensions/dtofighi/apa-layout/` | the extension: `_extension.yml` + four Lua filters |
+| `tests/run.sh` | renders `tests/fixture/fixture.qmd` (docx, Typst, jou PDF) and two probes, runs 10 checks |
 | `tests/pdf-gaps.py` | counts blank pockets in a two-column PDF (used by `jou_pockets`) |
+| `tests/man-gaps.py` | counts blank page remainders in a man PDF from pixels (used by `man_pockets`) |
 | `tests/prove-fail.sh` | negative controls: each filter disabled, each check must fail |
 | `tests/vendor/wjschne/` | apaquarto v7.0.0 release + apanote 6.0.0 (CC0), tests only |
 | `docs/` | quick start, site source |
@@ -42,7 +43,20 @@ markdownlint-cli2 "*.md" "docs/**/*.md"
   the latest release through the GitHub API: keep `GITHUB_TOKEN` on that step
   or runs fail intermittently with 403.
 - Bump `version` in `_extension.yml` and add a CHANGELOG entry per release.
+- `latex-header.lua` rewrites only `[H]` and empty float placements to `[tbp]`.
+  apaquarto sets the author note as a `\begin{figure}[b]` float; rewriting every
+  placement floats it under the abstract (check `jou_note`).
+- After a release, consumers re-copy from the tag (`git show
+  vX.Y.Z:_extensions/dtofighi/apa-layout/<file>`), never edit their vendored
+  folder, and run their own `render-both.sh` gate before the PR.
 - TeX in `\AtBeginDocument` (latex-header.lua): write `#1`, not `##1`.
+- `man-floats` is opt-in (`apa-layout: {man-floats: true}`, a nested map;
+  `pandoc -M apa-layout.man-floats=true` sets a literal dotted key and does not
+  nest). `man-floats.lua` floats only one-box tables, never a longtable (a
+  float truncates it silently). A raw `\begin{table}`/`\end{table}` must each
+  start a line: Quarto's latex postprocessor pairs them line by line and drops
+  the rest of the `.tex` when it cannot find the `\end{table}`, with no Lua
+  error.
 - Overfull boxes: quarto's stdout shows no LaTeX warnings; compile the kept
   `.tex` with `lualatex -draftmode` and read that log.
 - Word is the only trustworthy docx viewer; macOS Quick Look ignores table
